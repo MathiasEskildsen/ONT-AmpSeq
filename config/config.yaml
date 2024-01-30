@@ -1,0 +1,17 @@
+# This file is for various variables used throughout the workflow.
+# Everything else regarding how things are run should go in the profile config
+
+output_dir: "results"
+# input folder is expected to contain a subfolder for each sampleID/barcode
+# then all fastq files in each subfolder is concatenated and the folder name is 
+# used a sample ID downstream
+input_dir: "data/samples/"
+tmp_dir: "tmp"
+db_path: "/databases/midas/MiDAS5.2_20231221/output/FLASVs.fa"
+log_dir: "logs"
+
+# Number of threads to use for individual roles.
+# Not ideal, but threads can be set in multiple places, so the best is to set 
+# this to a large number and instead adjust the max-threads (per rule) 
+# in the profile config.yaml to suit your particular computing setup.
+max_threads: 128

@@ -1,0 +1,20 @@
+# Main entrypoint of the workflow. 
+# Please follow the best practices: 
+# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
+# in particular regarding the standardized folder structure mentioned there. 
+import os
+from snakemake.utils import min_version
+
+min_version("7.18.2")
+
+configfile: "config/config.yaml"
+
+# list all subfolders in input_dir
+sample_dirs = os.listdir(config['input_dir'])
+
+include: "rules/concatenate_fastq.smk"
+include: "rules/map2db.smk"
+
+rule all:
+  input:
+    expand(os.path.join(config['output_dir'], "{sample}.sam"), sample=sample_dirs)
