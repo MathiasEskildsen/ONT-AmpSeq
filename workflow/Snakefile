@@ -13,8 +13,11 @@ configfile: "config/config.yaml"
 sample_dirs = os.listdir(config['input_dir'])
 
 include: "rules/concatenate_fastq.smk"
-include: "rules/map2db.smk"
+include: "rules/filtering.smk"
+include: "rules/clustering.smk"
+include: "rules/mapping.smk"
+include: "rules/polish_racon.smk"
 
 rule all:
   input:
-    expand(os.path.join(config['output_dir'], "{sample}.sam"), sample=sample_dirs)
+    expand(os.path.join(config['output_polish'], "{sample}.polished.fasta"), sample=sample_dirs)

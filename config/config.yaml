@@ -1,7 +1,13 @@
 # This file is for various variables used throughout the workflow.
 # Everything else regarding how things are run should go in the profile config
 
+
+## Output folders
 output_dir: "results"
+output_cluster: "results/cluster"
+output_mapping: "results/mapping"
+output_polish: "results/polish"
+
 # input folder is expected to contain a subfolder for each sampleID/barcode
 # then all fastq files in each subfolder is concatenated and the folder name is 
 # used a sample ID downstream
@@ -9,6 +15,12 @@ input_dir: "data/samples/"
 tmp_dir: "tmp"
 db_path: "/databases/midas/MiDAS5.2_20231221/output/FLASVs.fa"
 log_dir: "logs"
+
+# Parameters for filtering reads (filtering.smk)
+# Change based on amplicon length and desired quiality
+length_lower_limit: 1200 # minimum length of reads to keep
+length_upper_limit: 1600 # maximum length of reads to keep
+quality_cut_off: 20 # minimum quality score to keep (phreed-score)
 
 # Number of threads to use for individual roles.
 # Not ideal, but threads can be set in multiple places, so the best is to set 
