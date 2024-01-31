@@ -1,0 +1,5 @@
+name: polish
+channels:
+  - bioconda
+dependencies:
+  - racon=1.5.0
