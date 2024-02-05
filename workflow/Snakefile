@@ -17,6 +17,10 @@ include: "rules/filtering.smk"
 include: "rules/clustering.smk"
 include: "rules/mapping.smk"
 include: "rules/polish_racon.smk"
+include: "rules/relabel_merge.smk"
+include: "rules/clustering_identity.smk"
+include: "rules/taxonomy_sintax.smk"
+include: "rules/fix_otu_table.smk"
 
 rule all:
   input:

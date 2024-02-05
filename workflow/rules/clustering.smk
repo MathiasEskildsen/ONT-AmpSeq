@@ -27,7 +27,8 @@ rule vsearch_cluster:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
     output:
         os.path.join(config["output_cluster"], "{sample}.cluster.fasta")
-    threads: config['max_threads']
+    threads:
+        1
     conda:
         "../envs/vsearch.yml"
     log:

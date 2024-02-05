@@ -7,6 +7,8 @@ output_dir: "results"
 output_cluster: "results/cluster"
 output_mapping: "results/mapping"
 output_polish: "results/polish"
+output_relabeled: "results/relabeled"
+output_OTU: "results/OTU"
 
 # input folder is expected to contain a subfolder for each sampleID/barcode
 # then all fastq files in each subfolder is concatenated and the folder name is 

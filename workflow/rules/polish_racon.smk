@@ -10,7 +10,7 @@ rule polish_racon:
     threads:
         config['max_threads']
     log:
-        os.path.join(config["log_dir"], "{sample}.polish_racon.log")
+        os.path.join(config["log_dir"], "polish", "{sample}.polish_racon.log")
     shell:
         """
         racon \
