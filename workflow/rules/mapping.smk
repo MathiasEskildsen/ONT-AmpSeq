@@ -12,7 +12,7 @@ rule concatenate_otus:
         os.path.join(config["output_cluster"], "concatenated_otus.fasta")
     shell:
         """
-        cat {input.fasta_files} > {output}
+        cat {input} > {output}
         """
 
 rule mapping:

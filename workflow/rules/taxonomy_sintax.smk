@@ -1,16 +1,17 @@
-rule taxonomy_sintax_97:
+rule taxonomy_sintax:
     input: 
-        os.path.join(config['output_OTU'], 'otu_97.fa')
+        os.path.join(config['output_OTU'], "{id}", "otu_{id}.fa")
     output:
-        os.path.join(config['output_OTU'], 'otu_taxonomy_97.txt')
+        os.path.join(config['output_OTU'], "{id}", "otu_taxonomy_{id}.txt")
     threads:
         config['max_threads']
     conda:
-        "envs/vsearch.yml"
+        "../envs/vsearch.yml"
     params:
-        db_path = config['db_path']
+        db_path = config['db_path'],
+        id = lambda wildcards: float(wildcards.id) / 100
     log:
-        os.path.join(config['log_dir'], "vsearch_tax", "otu_taxonomy_97.log")
+        os.path.join(config['log_dir'], "vsearch_tax", "{id}", "otu_taxonomy_{id}.log")
     shell:
         """"
         vsearch \
@@ -18,30 +19,6 @@ rule taxonomy_sintax_97:
         --db {params.db_path} \
         --tabbedout {output} \
         --threads {threads} \
-        --sintax_cutoff 0.97 \
+        --sintax_cutoff {params.id} \
         --strand both
         """
-rule taxonomy_sintax_99:
-    input: 
-        os.path.join(config['output_OTU'], 'otu_99.fa')
-    output:
-        os.path.join(config['output_OTU'], 'otu_taxonomy_99.txt')
-    threads:
-        config['max_threads']
-    conda:
-        "envs/vsearch.yml"
-    params:
-        db_path = config['db_path']
-    log:
-        os.path.join(config['log_dir'], "vsearch_tax", "otu_taxonomy_99.log")
-    shell:
-        """"
-        vsearch \
-        --sintax {input} \
-        --db {params.db_path} \
-        --tabbedout {output} \
-        --threads {threads} \
-        --sintax_cutoff 0.99 \
-        --strand both
-        """
-

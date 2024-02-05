@@ -3,6 +3,8 @@
 # https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
 # in particular regarding the standardized folder structure mentioned there. 
 import os
+import re
+import glob
 from snakemake.utils import min_version
 
 min_version("7.18.2")
@@ -11,17 +13,22 @@ configfile: "config/config.yaml"
 
 # list all subfolders in input_dir
 sample_dirs = os.listdir(config['input_dir'])
+# list all files in output_taxonomy folder 'ampvis2_otu_*.tsv'
+ampvis_otu_files = glob.glob(os.path.join(config['output_taxonomy'], "ampvis2_otu_*.tsv"))
+
 
 include: "rules/concatenate_fastq.smk"
 include: "rules/filtering.smk"
 include: "rules/clustering.smk"
 include: "rules/mapping.smk"
 include: "rules/polish_racon.smk"
-include: "rules/relabel_merge.smk"
+include: "rules/relabel.smk"
 include: "rules/clustering_identity.smk"
 include: "rules/taxonomy_sintax.smk"
 include: "rules/fix_otu_table.smk"
+include: "rules/prep_for_ampvis2.smk"
+
 
 rule all:
-  input:
-    expand(os.path.join(config['output_polish'], "{sample}.polished.fasta"), sample=sample_dirs)
+    input:
+        expand("results/taxonomy/{id}/ampvis2_otu_{id}.tsv", id=["97", "99"])

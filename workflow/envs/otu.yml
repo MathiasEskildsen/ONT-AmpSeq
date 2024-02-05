@@ -1,0 +1,6 @@
+name: otu
+channels:
+  - bioconda
+  - anaconda
+dependencies:
+  - python=3.10.11

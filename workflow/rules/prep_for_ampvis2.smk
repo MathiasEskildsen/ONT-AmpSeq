@@ -1,26 +1,24 @@
-# Define your rule(s) here
-
-rule prep_for_ampvis2_97:
+rule prep_for_ampvis2:
     input:
-        output_all = os.path.join(['output_OTU'], 'otu_table_97_fixed_all.tsv')
+        os.path.join(config["output_OTU"], "{id}", "otu_table_all_{id}.tsv")
     output:
-        output_temp = temp(os.path.join(['tmp_dir'], "taxonomy", 'otu_table_97_fixed_temp.tsv')),
-        output_all = os.path.join(['output_taxonomy'], 'otu_table_97_fixed_all.tsv')
-    params:
-        # Define parameters here (optional)
-    conda:
-        # Define conda environment here (optional)
+        output_all = os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}.tsv")    
+    log:
+        os.path.join(config['log_dir'], "taxonomy", 'prep_for_ampvis2_{id}.log')
+    threads:
+        1
     run:
         import csv
 
         # Rest of the Python script
         input_file = {input}
-        output_file = {output.output_temp}
+        output_file = {output}
         new_column_headers = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
 
         # Create a dictionary to map field names to new column values
         field_mapping = {
             "d": "kingdom",
+            "k": "kingdom",
             "p": "phylum",
             "c": "class",
             "o": "order",
@@ -60,5 +58,31 @@ rule prep_for_ampvis2_97:
                 modified_row = extract_and_map_values(row)
                 writer.writerow(modified_row)
 
-
-
+rule ampvis2_modifications:
+    input:
+        os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}.tsv")
+    output:
+        os.path.join(config['output_taxonomy'], "{id}", 'ampvis2_otu_{id}.tsv')
+    threads:
+        1
+    log:
+        os.path.join(config['log_dir'], "taxonomy", 'ampvis2_modifications_{id}.log')
+    shell:
+        """
+        modifications=(
+            's/kingdom__\\([^[:space:]]*\\)/k__\\1/g'
+            's/phylum__\\([^[:space:]]*\\)/p__\\1/g'
+            's/class__\\([^[:space:]]*\\)/c__\\1/g'
+            's/order__\\([^[:space:]]*\\)/o__\\1/g'
+            's/family__\\([^[:space:]]*\\)/f__\\1/g'
+            's/genus__\\([^[:space:]]*\\)/g__\\1/g'
+            's/species__\\([^[:space:]]*\\)/s__\\1/g'
+        )
+        input="{input}"
+        output="{output}"
+        cp $input $output
+        for modification in "${{modifications[@]}}"; do
+                echo "Applying modifications $modification to $output"
+                sed -i -e "$modification" $output
+        done
+        """
