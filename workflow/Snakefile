@@ -17,16 +17,16 @@ sample_dirs = os.listdir(config['input_dir'])
 ampvis_otu_files = glob.glob(os.path.join(config['output_taxonomy'], "ampvis2_otu_*.tsv"))
 
 
-include: "rules/concatenate_fastq.smk"
-include: "rules/filtering.smk"
-include: "rules/clustering.smk"
-include: "rules/mapping.smk"
-include: "rules/polish_racon.smk"
-include: "rules/relabel.smk"
-include: "rules/clustering_identity.smk"
-include: "rules/taxonomy_sintax.smk"
-include: "rules/fix_otu_table.smk"
-include: "rules/prep_for_ampvis2.smk"
+include: "rules/01-concatenate_fastq.smk"
+include: "rules/02-filtering.smk"
+include: "rules/03-clustering.smk"
+include: "rules/04-mapping.smk"
+include: "rules/05-polish_racon.smk"
+include: "rules/06-relabel.smk"
+include: "rules/07-clustering_identity.smk"
+include: "rules/08-taxonomy_sintax.smk"
+include: "rules/09-fix_otu_table.smk"
+include: "rules/10-prep_for_ampvis2.smk"
 
 
 rule all:
