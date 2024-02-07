@@ -19,6 +19,12 @@ ampvis_otu_files = glob.glob(os.path.join(config['output_taxonomy'], "ampvis2_ot
 
 include: "rules/01-concatenate_fastq.smk"
 include: "rules/02-filtering.smk"
+# add:
+# - strip primers/barcodes/adapters
+# - need alignment first to align 3' ends before clustering?
+# orient reads to the same strand
+# dereplicate
+# remove singletons (must with nanopore!)
 include: "rules/03-clustering.smk"
 include: "rules/04-mapping.smk"
 include: "rules/05-polish_racon.smk"
@@ -26,8 +32,7 @@ include: "rules/06-relabel.smk"
 include: "rules/07-clustering_identity.smk"
 include: "rules/08-taxonomy_sintax.smk"
 include: "rules/09-fix_otu_table.smk"
-include: "rules/10-prep_for_ampvis2.smk"
-
+include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load() reads sintax files directly, see "taxonomy" here https://kasperskytte.github.io/ampvis2/reference/amp_load.html#arguments-1
 
 rule all:
     input:

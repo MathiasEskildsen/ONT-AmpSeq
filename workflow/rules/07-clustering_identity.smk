@@ -17,11 +17,11 @@ rule cluster_ID:
     shell:
         """
         vsearch \
-        --cluster_fast {input} \
-        --id {params.id} \
-        --threads {threads} \
-        --relabel OTU_ \
-        --sizeout \
-        --otutabout {output.otu_table} \
-        --centroids {output.otu_centroids}
+            --cluster_fast {input} \
+            --id {params.id} \
+            --threads {threads} \
+            --relabel OTU_ \
+            --sizeout \
+            --otutabout {output.otu_table} \
+            --centroids {output.otu_centroids}
         """
