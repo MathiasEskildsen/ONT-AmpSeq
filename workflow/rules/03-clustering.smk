@@ -11,9 +11,6 @@ def fastq_to_fasta(input_fastq, output_fasta):
             else:
                 f_out.write(line)
 
-# Get a list of all fastq files in the tmp_dir
-fastq_files = [f for f in os.listdir(config["tmp_dir"]) if f.endswith("_filtered.fastq")]
-
 rule convert_to_fasta:
     input:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq")
@@ -31,7 +28,7 @@ rule vsearch_cluster:
     output:
         os.path.join(config["output_cluster"], "{sample}.cluster.fasta")
     threads:
-        1
+        1    
     resources:
         mem_mb = 4096
     conda:
