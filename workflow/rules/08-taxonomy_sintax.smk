@@ -13,14 +13,14 @@ rule taxonomy_sintax:
         db_path = config['db_path'],
         id = lambda wildcards: float(wildcards.id) / 100
     log:
-        os.path.join(config['log_dir'], "vsearch_tax", "{id}", "otu_taxonomy_{id}.log")
+        os.path.join(config['log_dir'], "taxonomy_sintax", "{id}", "otu_taxonomy_{id}.log")
     shell:
-        """"
+        """
         vsearch \
-        --sintax {input} \
-        --db {params.db_path} \
-        --tabbedout {output} \
-        --threads {threads} \
-        --sintax_cutoff {params.id} \
-        --strand both
+            --sintax {input} \
+            --db {params.db_path} \
+            --tabbedout {output} \
+            --threads {threads} \
+            --sintax_cutoff {params.id} \ # <- bootstrap cutoff, not ID
+            --strand both
         """

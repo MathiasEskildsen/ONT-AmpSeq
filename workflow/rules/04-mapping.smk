@@ -28,7 +28,7 @@ rule mapping:
     conda:
         "../envs/mapping.yml"
     log:
-        os.path.join(config["log_dir"], "aligned", "{sample}.log")
+        os.path.join(config["log_dir"], "mapping", "{sample}.log")
     shell:
         """
         minimap2 \

@@ -13,7 +13,7 @@ rule filter_fastq:
     conda:
         "../envs/filtering.yml"
     log:
-        os.path.join(config['log_dir'], "filtering", "{sample}_filtering.log")
+        os.path.join(config['log_dir'], "filter_fastq", "{sample}.log")
     shell:
         """
     chopper \

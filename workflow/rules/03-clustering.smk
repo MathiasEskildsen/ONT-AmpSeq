@@ -37,7 +37,7 @@ rule vsearch_cluster:
     conda:
         "../envs/vsearch.yml"
     log:
-        os.path.join(config["log_dir"], "{sample}.cluster.log")
+        os.path.join(config["log_dir"], "vsearch_cluster", "{sample}.log")
     shell:
         """"
     vsearch \

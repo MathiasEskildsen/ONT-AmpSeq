@@ -11,7 +11,7 @@ rule cluster_ID:
     conda:
         "../envs/vsearch.yml"
     log:
-        os.path.join(config['log_dir'], "{id}", "otu_{id}.log")
+        os.path.join(config['log_dir'], "cluster_ID", "otu_{id}.log")
     params:
         id = lambda wildcards: float(wildcards.id) / 100
     shell:

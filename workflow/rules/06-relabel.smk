@@ -10,7 +10,7 @@ rule relabel:
     resources:
         mem_mb = 2048
     log:
-        os.path.join(config['log_dir'], "relabel" "{sample}.relabeled.log")
+        os.path.join(config['log_dir'], "relabel" "{sample}.log")
     shell:
         """"
         vsearch \

@@ -10,7 +10,7 @@ rule fix_otu_table:
     resources:
         mem_mb = 1024
     log:
-        os.path.join(config["log_dir"], "fix_otu", "otu_table_all_{id}.log")
+        os.path.join(config["log_dir"], "fix_otu_table", "otu_table_all_{id}.log")
     shell:
         """
         awk -F "\t" 'OFS="\t"{{gsub(/;.*/," ",$1);print $1 $4}}' {input.otu_txt} | awk -F ' ' '{{print $1"\t"$2}}' > {output.output_temp}

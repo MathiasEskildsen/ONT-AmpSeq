@@ -12,7 +12,7 @@ rule polish_racon:
     resources:
         mem_mb = 4096
     log:
-        os.path.join(config["log_dir"], "polish", "{sample}.polish_racon.log")
+        os.path.join(config["log_dir"], "polish_racon", "{sample}.log")
     shell:
         """
         racon \
