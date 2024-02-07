@@ -6,7 +6,7 @@ rule polish_racon:
     output:
         os.path.join(config["output_polish"], "{sample}.polished.fasta")
     conda:
-        "../envs/racon.yml"
+        "../envs/polish.yml"
     threads:
         config['max_threads']
     resources:
