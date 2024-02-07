@@ -7,6 +7,8 @@ rule fix_otu_table:
         output_temp = temp(os.path.join(config["tmp_dir"], "{id}", "otu_taxonomy_{id}_cut_temp.txt"))
     threads:
         1
+    resources:
+        mem_mb = 1024
     log:
         os.path.join(config["log_dir"], "fix_otu", "otu_table_all_{id}.log")
     shell:

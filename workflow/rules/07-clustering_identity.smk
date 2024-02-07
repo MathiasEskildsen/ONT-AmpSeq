@@ -6,6 +6,8 @@ rule cluster_ID:
         otu_centroids = os.path.join(config['output_OTU'], "{id}", "otu_{id}.fa")
     threads:
         config['max_threads']
+    resources:
+        mem_mb = 2048
     conda:
         "../envs/vsearch.yml"
     log:

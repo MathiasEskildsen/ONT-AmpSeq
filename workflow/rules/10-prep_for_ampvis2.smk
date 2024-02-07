@@ -7,6 +7,8 @@ rule prep_for_ampvis2:
         os.path.join(config['log_dir'], "taxonomy", 'prep_for_ampvis2_{id}.log')
     threads:
         1
+    resources:
+        mem_mb = 2048
     run:
         import csv
 
@@ -65,6 +67,8 @@ rule ampvis2_modifications:
         os.path.join(config['output_taxonomy'], "{id}", 'ampvis2_otu_{id}.tsv')
     threads:
         1
+    resources:
+        mem_mb = 1024
     log:
         os.path.join(config['log_dir'], "taxonomy", 'ampvis2_modifications_{id}.log')
     shell:

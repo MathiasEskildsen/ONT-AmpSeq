@@ -5,6 +5,8 @@ rule taxonomy_sintax:
         os.path.join(config['output_OTU'], "{id}", "otu_taxonomy_{id}.txt")
     threads:
         config['max_threads']
+    resources:
+        mem_mb = 2048
     conda:
         "../envs/vsearch.yml"
     params:

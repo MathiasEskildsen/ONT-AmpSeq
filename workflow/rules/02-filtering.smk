@@ -4,6 +4,8 @@ rule filter_fastq:
     input: os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq.gz")
     output: temp(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq"))
     threads: config['max_threads']
+    resources:
+        mem_mb = 10240
     params:
         length_lower_limit = config['length_lower_limit'],
         length_upper_limit = config['length_upper_limit'],

@@ -7,6 +7,8 @@ rule relabel:
         "../envs/vsearch.yml"
     threads:
         config['max_threads']
+    resources:
+        mem_mb = 2048
     log:
         os.path.join(config['log_dir'], "relabel" "{sample}.relabeled.log")
     shell:
@@ -25,6 +27,8 @@ rule relabel_merge:
         os.path.join(config['output_relabeled'], "merged_polished_relabeled.fasta")
     threads:
         config['max_threads']
+    resources:
+        mem_mb = 512
     log:
         os.path.join(config['log_dir'], "relabel" ,"merged_polished_relabeled.log")
     shell:

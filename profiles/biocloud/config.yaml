@@ -14,7 +14,7 @@ cluster:
 default-resources:
   - partition="general"
   - qos="normal"
-  - threads=128
+  - threads=1
   - mem_mb=1024
   - gpu=0
 #max threads per job/rule. Will take precedence over anything else. Adjust this

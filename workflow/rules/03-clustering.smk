@@ -19,6 +19,9 @@ rule convert_to_fasta:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq")
     output:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
+    threads: 1
+    resources:
+        mem_mb = 1024
     run:
         fastq_to_fasta({input}, {output})
 
@@ -29,6 +32,8 @@ rule vsearch_cluster:
         os.path.join(config["output_cluster"], "{sample}.cluster.fasta")
     threads:
         1
+    resources:
+        mem_mb = 4096
     conda:
         "../envs/vsearch.yml"
     log:

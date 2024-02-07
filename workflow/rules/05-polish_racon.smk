@@ -9,6 +9,8 @@ rule polish_racon:
         "../envs/racon.yml"
     threads:
         config['max_threads']
+    resources:
+        mem_mb = 4096
     log:
         os.path.join(config["log_dir"], "polish", "{sample}.polish_racon.log")
     shell:
