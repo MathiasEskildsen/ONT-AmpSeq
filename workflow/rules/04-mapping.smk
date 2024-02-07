@@ -1,13 +1,9 @@
 import glob
 import os
-# Create an input function to get all the fasta files in the output_cluster directory
-def get_fasta_files():
-    fasta_files = glob.glob(os.path.join(config["output_cluster"], "*.cluster.fasta"))
-    return fasta_files
 
 rule concatenate_otus:
     input:
-        get_fasta_files()
+        # Use output from previous rule
     output:
         os.path.join(config["output_cluster"], "concatenated_otus.fasta")
     shell:
