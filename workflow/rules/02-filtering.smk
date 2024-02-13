@@ -3,9 +3,11 @@ configfile: "config/config.yaml"
 rule filter_fastq:
     input: os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq.gz")
     output: temp(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq"))
-    threads: config['max_threads']
+    threads:
+        config['max_threads']
     resources:
-        mem_mb = 10240
+        mem_mb = 10240,
+        runtime = "01:00:00"
     params:
         length_lower_limit = config['length_lower_limit'],
         length_upper_limit = config['length_upper_limit'],
@@ -16,8 +18,8 @@ rule filter_fastq:
         os.path.join(config['log_dir'], "filter_fastq", "{sample}.log")
     shell:
         """
-    chopper \
-        {input} \
+        gunzip -c {input} | \
+        chopper \
         --minlength {params.length_lower_limit} \
         --maxlength {params.length_upper_limit} \
         --headcrop 22 \

@@ -1,37 +1,40 @@
 rule relabel:
     input:
-        os.path.join(config['output_polish'], "{sample}.polished.fasta")
+        os.path.join(config['output_polish'], "samples", "{sample}_polished.fasta")
     output:
-        os.path.join(config['output_relabeled'], "{sample}.relabeled.fasta")
+        os.path.join(config['output_relabeled'], "samples", "{sample}_relabeled.fasta")
     conda:
         "../envs/vsearch.yml"
     threads:
-        config['max_threads']
+        1
     resources:
-        mem_mb = 2048
+        mem_mb = 2048,
+        runtime = "01:00:00"
     log:
-        os.path.join(config['log_dir'], "relabel" "{sample}.log")
+        os.path.join(config['log_dir'], "relabel", "{sample}.log")
     shell:
-        """"
+        """
         vsearch \
-        --sortbysize {input} \
-        --relabel {wildcards.sample}. \
-        --threads {threads} \
-        --output {output}
+            --sortbysize {input} \
+            --relabel {wildcards.sample}. \
+            --threads {threads} \
+            --output {output}
         """
 
 rule relabel_merge:
     input:
-        expand(os.path.join(config['output_relabeled'], "{sample}.relabeled.fasta"), sample=config['input_dir'])
+        expand(os.path.join(config['output_relabeled'], "samples", "{sample}_relabeled.fasta"), sample=sample_dirs)
     output:
-        os.path.join(config['output_relabeled'], "merged_polished_relabeled.fasta")
+        os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")
     threads:
-        config['max_threads']
+        1
     resources:
-        mem_mb = 512
+        mem_mb = 512,
+        runtime = "01:00:00",
+        threads = 1
     log:
-        os.path.join(config['log_dir'], "relabel" ,"merged_polished_relabeled.log")
+        os.path.join(config['log_dir'], "relabel", "merged_polished_relabeled.log")
     shell:
-        """"
+        """
         cat {input} > {output}
         """

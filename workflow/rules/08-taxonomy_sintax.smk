@@ -6,12 +6,13 @@ rule taxonomy_sintax:
     threads:
         config['max_threads']
     resources:
-        mem_mb = 2048
+        mem_mb = 2048,
+        runtime = "02:00:00"
     conda:
         "../envs/vsearch.yml"
     params:
         db_path = config['db_path'],
-        id = lambda wildcards: float(wildcards.id) / 100
+        id = lambda wildcards: float(wildcards.id) / 100 # <- sintax cutoff (bootstrap value)
     log:
         os.path.join(config['log_dir'], "taxonomy_sintax", "{id}", "otu_taxonomy_{id}.log")
     shell:
@@ -21,6 +22,6 @@ rule taxonomy_sintax:
             --db {params.db_path} \
             --tabbedout {output} \
             --threads {threads} \
-            --sintax_cutoff {params.id} \ # <- bootstrap cutoff, not ID
+            --sintax_cutoff {params.id} \
             --strand both
         """

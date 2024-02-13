@@ -12,7 +12,8 @@ rule concatenate_fastq:
   output:
     temp(os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq.gz"))
   resources:
-    mem_mb = 512
+    mem_mb = 512,
+    runtime = "01:00:00"
   threads: 1
   log:
     os.path.join(config["log_dir"], "concatenate_fastq", "{sample}.log")

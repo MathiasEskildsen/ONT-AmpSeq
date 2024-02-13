@@ -8,13 +8,15 @@ rule prep_for_ampvis2:
     threads:
         1
     resources:
-        mem_mb = 2048
+        mem_mb = 2048,
+        runtime = "01:00:00",
+        threads = 1
     run:
         import csv
 
         # Rest of the Python script
-        input_file = {input}
-        output_file = {output}
+        input_file = input[0]
+        output_file = output["output_all"]
         new_column_headers = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
 
         # Create a dictionary to map field names to new column values

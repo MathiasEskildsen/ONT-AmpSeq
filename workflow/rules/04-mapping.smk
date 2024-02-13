@@ -3,9 +3,9 @@ import os
 
 rule concatenate_otus:
     input:
-        # Use output from previous rule
+        expand(os.path.join(config["output_cluster"], "samples", "{sample}_cluster.fasta"),sample=sample_dirs) # Use aggregate rule to concatenate all files using wildcard.sample
     output:
-        os.path.join(config["output_cluster"], "concatenated_otus.fasta")
+        os.path.join(config["output_cluster"], "concatenate_otus", "concatenated_otus.fasta")
     shell:
         """
         cat {input} > {output}
@@ -13,12 +13,13 @@ rule concatenate_otus:
 
 rule mapping:
     input:
-        combined = os.path.join(config["output_cluster"], "concatenated_otus.fasta"),
-        samples = os.path.join(config["output_cluster"], "{sample}.cluster.fasta")
+        combined = os.path.join(config["output_cluster"], "concatenate_otus", "concatenated_otus.fasta"),
+        samples = os.path.join(config["output_cluster"], "samples", "{sample}_cluster.fasta")
     output:
-        os.path.join(config["output_mapping"], "{sample}_aligned.sam")
+        os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam")
     resources:
-        mem_mb = 10240
+        mem_mb = 20480,
+        runtime = "1-00:00:00" # - Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
     threads:
         config['max_threads']
     conda:
@@ -29,7 +30,7 @@ rule mapping:
         """
         minimap2 \
         -ax map-ont \
-        -K500M
+        -K500M \
         -t {threads} \
         --secondary=no \
         {input.samples} \

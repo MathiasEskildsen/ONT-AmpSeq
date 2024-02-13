@@ -3,14 +3,6 @@ configfile: "config/config.yaml"
 import os
 # Function to change fastq headers to fasta headers
 # And create a list of all new files with fasta headers
-def fastq_to_fasta(input_fastq, output_fasta):
-    with open(input_fastq, "r") as f_in, open(output_fasta, "w") as f_out:
-        for line in f_in:
-            if line.startswith("@"):
-                f_out.write(">" + line[1:])
-            else:
-                f_out.write(line)
-
 rule convert_to_fasta:
     input:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq")
@@ -18,28 +10,31 @@ rule convert_to_fasta:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
     threads: 1
     resources:
-        mem_mb = 1024
-    run:
-        fastq_to_fasta({input}, {output})
-
+        mem_mb = 512,
+        runtime = "01:00:00" # - Adding run time to the rule
+    shell:
+        """
+        sed -n '1~4s/^@/>/p;2~4p' {input} > {output}    
+    """
 rule vsearch_cluster:
     input:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
     output:
-        os.path.join(config["output_cluster"], "{sample}.cluster.fasta")
+        os.path.join(config["output_cluster"], "samples", "{sample}_cluster.fasta")
     threads:
         1    
     resources:
-        mem_mb = 4096
+        mem_mb = 2048,
+        runtime = "1-00:00:00"
     conda:
         "../envs/vsearch.yml"
     log:
         os.path.join(config["log_dir"], "vsearch_cluster", "{sample}.log")
     shell:
-        """"
+        """
     vsearch \
         --cluster_unoise {input} \
-        --minsize \
+        --minsize 1 \
         --threads {threads} \
         --centroids {output}
     """

@@ -2,4 +2,4 @@ name: vsearch
 channels:
   - bioconda
 dependencies:
-  - vsearch=2.26.1
+  - vsearch=2.27.0

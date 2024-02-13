@@ -8,7 +8,8 @@ rule fix_otu_table:
     threads:
         1
     resources:
-        mem_mb = 1024
+        mem_mb = 1024,
+        runtime = "01:00:00"
     log:
         os.path.join(config["log_dir"], "fix_otu_table", "otu_table_all_{id}.log")
     shell:
