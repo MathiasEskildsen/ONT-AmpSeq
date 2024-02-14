@@ -1,6 +1,6 @@
 rule prep_for_ampvis2:
     input:
-        os.path.join(config["output_OTU"], "{id}", "otu_table_all_{id}.tsv")
+        input_all = os.path.join(config["output_OTU"], "{id}", "otu_table_all_{id}.tsv")
     output:
         output_all = os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}.tsv")    
     log:
@@ -14,8 +14,7 @@ rule prep_for_ampvis2:
     run:
         import csv
 
-        # Rest of the Python script
-        input_file = input[0]
+        input_file = input["input_all"]
         output_file = output["output_all"]
         new_column_headers = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
 
