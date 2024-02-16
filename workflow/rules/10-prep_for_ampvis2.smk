@@ -9,8 +9,7 @@ rule prep_for_ampvis2:
         1
     resources:
         mem_mb = 2048,
-        runtime = "01:00:00",
-        threads = 1
+        runtime = "01:00:00"
     run:
         import csv
 
@@ -69,19 +68,20 @@ rule ampvis2_modifications:
     threads:
         1
     resources:
-        mem_mb = 1024
+        mem_mb = 1024,
+        runtime = "01:00:00"
     log:
         os.path.join(config['log_dir'], "taxonomy", 'ampvis2_modifications_{id}.log')
     shell:
         """
         modifications=(
-            's/kingdom__\\([^[:space:]]*\\)/k__\\1/g'
-            's/phylum__\\([^[:space:]]*\\)/p__\\1/g'
-            's/class__\\([^[:space:]]*\\)/c__\\1/g'
-            's/order__\\([^[:space:]]*\\)/o__\\1/g'
-            's/family__\\([^[:space:]]*\\)/f__\\1/g'
-            's/genus__\\([^[:space:]]*\\)/g__\\1/g'
-            's/species__\\([^[:space:]]*\\)/s__\\1/g'
+            's/kingdom\s*__\s*\\([^[:space:]]*\\)/k__\\1/g'
+            's/phylum\s*__\s*\\([^[:space:]]*\\)/p__\\1/g'
+            's/class\s*__\s*\\([^[:space:]]*\\)/c__\\1/g'
+            's/order\s*__\s*\\([^[:space:]]*\\)/o__\\1/g'
+            's/family\s*__\s*\\([^[:space:]]*\\)/f__\\1/g'
+            's/genus\s*__\s*\\([^[:space:]]*\\)/g__\\1/g'
+            's/species\s*__\s*\\([^[:space:]]*\\)/s__\\1/g'
         )
         input="{input}"
         output="{output}"

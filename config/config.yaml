@@ -16,7 +16,7 @@ output_taxonomy: "results/taxonomy"
 # used a sample ID downstream
 input_dir: "data/samples/"
 tmp_dir: "tmp"
-db_path: "/databases/midas/MiDAS5.2_20231221/output/FLASVs.fa"
+db_path: "/databases/midas/MiDAS5.2_20231221/output/FLASVs_w_sintax.fa"
 log_dir: "logs"
 
 # Parameters for filtering reads (filtering.smk)

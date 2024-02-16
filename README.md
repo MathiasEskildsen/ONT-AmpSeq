@@ -16,6 +16,8 @@ The usage of this workflow is also described in the [Snakemake Workflow Catalog]
 
 
 # TODO
+* Create phyloseq-ready output
+* Add blast taxonomy option
 * Replace `<owner>` and `<repo>` with the correct values in this `README.md` as well as in files under `.github/workflows/`.
 * Replace `<snakemake_template>` with the workflow/project name (can be the same as `<repo>`) here as well as in the `environment.yml` and `slurm_submit.sbatch` files.
 * Add more requirements to the `environment.yml` file if needed, however tools for each Snakemake rule should **NOT** go here, they should be configured separately for each rule instead in `yaml` files under `envs/`.
