@@ -23,7 +23,7 @@ log_dir: "logs"
 # Change based on amplicon length and desired quiality
 length_lower_limit: 1200 # minimum length of reads to keep
 length_upper_limit: 1600 # maximum length of reads to keep
-quality_cut_off: 20 # minimum quality score to keep (phred-score)
+quality_cut_off: 23 # minimum quality score to keep (phred-score)
 
 # Number of threads to use for individual roles.
 # Not ideal, but threads can be set in multiple places, so the best is to set 

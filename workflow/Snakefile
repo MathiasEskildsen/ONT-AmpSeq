@@ -39,4 +39,5 @@ rule all:
         #expand(os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")) # <- relabeled output with merge, works
         #expand(os.path.join(config['output_polish'], "samples", "{sample}.polished.fasta"), sample=sample_dirs) # <- polish output, works
         #expand(os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam"), sample=sample_dirs) # <- mapping output, works
-        expand("results/taxonomy/{id}/ampvis2_otu_{id}.tsv", id=["97", "99"]) #<- final output, let's see if it works
+        expand("results/taxonomy/{id}/ampvis2_otu_{id}.tsv", id=["97", "99"]) #<- final output, let's see if it works - works for un-merged compressed files
+        #expand(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq"), sample=sample_dirs)

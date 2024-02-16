@@ -4,3 +4,4 @@ logs/**
 .snakemake
 .snakemake/**
 tmp/**
+data/samples/**
