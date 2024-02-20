@@ -30,7 +30,7 @@ include: "rules/04-mapping.smk"
 include: "rules/05-polish_racon.smk"
 include: "rules/06-relabel.smk"
 include: "rules/07-clustering_identity.smk"
-include: "rules/08-taxonomy_sintax.smk"
+include: "rules/08-taxonomy.smk"
 include: "rules/09-fix_otu_table.smk"
 include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load() reads sintax files directly, see "taxonomy" here https://kasperskytte.github.io/ampvis2/reference/amp_load.html#arguments-1
 
