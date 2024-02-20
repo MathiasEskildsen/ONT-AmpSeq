@@ -20,9 +20,13 @@ rule concatenate_fastq:
     shell:
         """
         # Check if input files are compressed
-        if [[ $(file -b --mime-type {input}) == "application/gzip" ]]; then
-            zcat {input} > {output}
-        else
-            cat {input} > {output}
-        fi
+        for file in {input}; do
+            if gzip -t $file 2>/dev/null; then
+                echo "Decompressing $file"
+                zcat $file >> {output}
+            else
+                echo "Copying $file"
+                cat $file >> {output}
+            fi
+        done
         """

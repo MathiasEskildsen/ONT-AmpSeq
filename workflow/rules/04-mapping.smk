@@ -7,8 +7,8 @@ rule concatenate_otus:
     output:
         os.path.join(config["output_cluster"], "concatenate_otus", "concatenated_otus.fasta")
     resources:
-        mem_mb = 1024,
-        runtime = "01:00:00" # - Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
+        mem_mb = 1024, #1GB
+        runtime = "01:00:00" # <-- Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
     shell:
         """
         cat {input} > {output}
@@ -21,8 +21,8 @@ rule mapping:
     output:
         os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam")
     resources:
-        mem_mb = 20480,
-        runtime = "1-00:00:00" # - Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
+        mem_mb = 40960, #40GB
+        runtime = "2-00:00:00" # <-- Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
     threads:
         config['max_threads']
     conda:
@@ -34,6 +34,7 @@ rule mapping:
         minimap2 \
         -ax map-ont \
         -K500M \
+        -f1000 \ # <-- Added this flag for mapping against large number of 16S. For many repetitive sequences.
         -t {threads} \
         --secondary=no \
         {input.samples} \
