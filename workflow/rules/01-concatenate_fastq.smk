@@ -3,9 +3,15 @@ import os
 
 # Helper function to list all fastq files per wildcard (subfolder/sample)
 def listFastq(wildcards):
-    fastqs = glob.glob(os.path.join(config['input_dir'], wildcards.sample, "*.fastq*"))
+    sample_path = os.path.join(config['input_dir'])
+    if os.path.isdir(sample_path) and any(os.path.isdir(os.path.join(sample_path, i)) for i in os.listdir(sample_path)):
+        fastqs = glob.glob(os.path.join(config['input_dir'], wildcards.sample, "*.fastq*"))
+    else:
+        for file_path in sample_dirs:
+            filename_without_extension = os.path.splitext(os.path.basename(file_path))[0]
+            filename_without_extension = wildcards.sample
+            fastqs = glob.glob(os.path.join(config['input_dir'], wildcards.sample))
     return fastqs
-
 rule concatenate_fastq:
     input:
         listFastq

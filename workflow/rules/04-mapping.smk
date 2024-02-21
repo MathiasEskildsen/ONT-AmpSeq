@@ -34,7 +34,7 @@ rule mapping:
         minimap2 \
         -ax map-ont \
         -K500M \
-        -f1000 \ # <-- Added this flag for mapping against large number of 16S. For many repetitive sequences.
+        -f2000 \
         -t {threads} \
         --secondary=no \
         {input.samples} \

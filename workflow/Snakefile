@@ -36,6 +36,7 @@ include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load()
 
 rule all:
     input:
+        #expand(os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq"),sample=sample_dirs)
         #expand(os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")) # <- relabeled output with merge, works
         #expand(os.path.join(config['output_polish'], "samples", "{sample}.polished.fasta"), sample=sample_dirs) # <- polish output, works
         #expand(os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam"), sample=sample_dirs) # <- mapping output, works

@@ -38,7 +38,7 @@ if config['taxonomy_blast']:
         shell:
             """
                 awk -F'\t' '{print $1 "\t" $2}' {input.otu_txt} > {output.output_temp}
-                sed -i 's/;size=[0-9]\+\t/\t/' {output.output_temp}
+                sed -i 's/;size=[0-9]\\+\t/\t/' {output.output_temp}
                 awk -i inplace -F'\t' '$2 !~ /^[uU]ncultured/' {output.output_temp}
                 (echo -e "OTU ID\tgenus\tspecies\tnotes"; awk -F'\t' 'BEGIN {OFS="\t"} {split($2, words, " "); print $1, "g__"words[1], "s__"words[2], $2}' {output.output_temp}) > {output.output_temp1}
                 sed -i '1 s/OTU ID/OTU_ID/' {output.output_temp1}

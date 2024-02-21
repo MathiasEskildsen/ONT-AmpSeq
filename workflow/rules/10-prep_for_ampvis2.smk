@@ -77,13 +77,13 @@ if config['taxonomy_sintax']:
         shell:
             """
             modifications=(
-                's/kingdom\s*__\s*\\([^[:space:]]*\\)/k__\\1/g'
-                's/phylum\s*__\s*\\([^[:space:]]*\\)/p__\\1/g'
-                's/class\s*__\s*\\([^[:space:]]*\\)/c__\\1/g'
-                's/order\s*__\s*\\([^[:space:]]*\\)/o__\\1/g'
-                's/family\s*__\s*\\([^[:space:]]*\\)/f__\\1/g'
-                's/genus\s*__\s*\\([^[:space:]]*\\)/g__\\1/g'
-                's/species\s*__\s*\\([^[:space:]]*\\)/s__\\1/g'
+                's/kingdom\\s*__\\s*\\([^[:space:]]*\\)/k__\\1/g'
+                's/phylum\\s*__\\s*\\([^[:space:]]*\\)/p__\\1/g'
+                's/class\\s*__\\s*\\([^[:space:]]*\\)/c__\\1/g'
+                's/order\\s*__\\s*\\([^[:space:]]*\\)/o__\\1/g'
+                's/family\\s*__\\s*\\([^[:space:]]*\\)/f__\\1/g'
+                's/genus\\s*__\\s*\\([^[:space:]]*\\)/g__\\1/g'
+                's/species\\s*__\\s*\\([^[:space:]]*\\)/s__\\1/g'
             )
             input="{input}"
             output="{output}"
@@ -97,7 +97,7 @@ configfile: "config/config.yaml"
 if config['taxonomy_blast']:
     rule prep_for_ampvis2_blast:
         input:
-            otu_table = os.path.join(config['output_OTU'], "{id}", "otu_cluster_{id}.tsv")
+            otu_table = os.path.join(config['output_OTU'], "{id}", "otu_cluster_{id}.tsv"),
             otu_tax = os.path.join(config["tmp_dir"], "{id}", "otu_taxonomy_{id}_cut_temp1_blast.txt")
         output:
             output_all = os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}_blast.tsv")    
