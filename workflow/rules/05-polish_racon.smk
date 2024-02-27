@@ -10,7 +10,7 @@ rule polish_racon:
     threads:
         config['max_threads']
     resources:
-        mem_mb = 1024, # 20GB might need to be adjusted to appropriate value after testing
+        mem_mb = 10240, # 10GB might need to be adjusted to appropriate value after testing
         runtime = "01:00:00"
     log:
         os.path.join(config["log_dir"], "polish_racon", "{sample}.log")
