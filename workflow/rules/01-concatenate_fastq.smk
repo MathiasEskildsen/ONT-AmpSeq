@@ -1,6 +1,5 @@
 import glob
 import os
-
 # Helper function to list all fastq files per wildcard (subfolder/sample)
 def listFastq(wildcards):
     sample_path = os.path.join(config['input_dir'])

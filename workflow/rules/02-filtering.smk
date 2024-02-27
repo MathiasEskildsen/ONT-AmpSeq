@@ -3,9 +3,10 @@ rule filter_fastq:
         os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq")
     output:
         temp(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq"))
-    threads: config['max_threads']
+    threads:
+        2
     resources:
-        mem_mb = 10240,
+        mem_mb = 1024,
         runtime = "01:00:00"
     params:
         length_lower_limit = config['length_lower_limit'],

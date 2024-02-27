@@ -66,7 +66,8 @@ if config['taxonomy_sintax']:
         input:
             os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
         output:
-            os.path.join(config['output_taxonomy'], "{id}", 'ampvis2_otu_{id}.tsv')
+            final = os.path.join(config['output_taxonomy'], "{id}", 'OTUtable_tax_{id}_sintax.tsv'), # <- this is the output file ready for ampvis2
+            tmp = os.path.join(config['tmp_dir'], "{id}", 'OTUtable_tax_{id}_sintax_temp.tsv')
         threads:
             1
         resources:
@@ -86,13 +87,15 @@ if config['taxonomy_sintax']:
                 's/species\\s*__\\s*\\([^[:space:]]*\\)/s__\\1/g'
             )
             input="{input}"
-            output="{output}"
+            output="{output.tmp}"
             cp $input $output
             for modification in "${{modifications[@]}}"; do
                     echo "Applying modifications $modification to $output"
                     sed -i -e "$modification" $output
             done
-            """
+            sed -i '1 s/#OTU ID/OTU/' {output.tmp}
+            awk -F'\t' 'BEGIN {{OFS="\t"}} {{for (i=1; i<=NF; i++) gsub(/^[ \t]+|[ \t]+$/, "", $i)}} 1' {output.tmp} > {output.final}
+        """
 configfile: "config/config.yaml"
 if config['taxonomy_blast']:
     rule prep_for_ampvis2_blast:
@@ -100,7 +103,7 @@ if config['taxonomy_blast']:
             otu_table = os.path.join(config['output_OTU'], "{id}", "otu_cluster_{id}.tsv"),
             otu_tax = os.path.join(config["tmp_dir"], "{id}", "otu_taxonomy_{id}_cut_temp1_blast.txt")
         output:
-            output_all = os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}_blast.tsv")    
+            output_all = os.path.join(config['output_taxonomy'], "{id}", "OTUtable_tax_{id}_blast.tsv")    
         log:
             os.path.join(config['log_dir'], "taxonomy_blast", 'prep_for_ampvis2_{id}.log')
         threads:
@@ -112,5 +115,5 @@ if config['taxonomy_blast']:
             import pandas as pd
             otus_tax = pd.read_csv(input.otu_tax, sep='\t')
             otutable = pd.read_csv(input.otu_table, sep='\t')
-            merged_data = pd.merge(otutable, otus_tax, on='OTU_ID', how='right')
+            merged_data = pd.merge(otutable, otus_tax, on='OTU', how='right')
             merged_data.to_csv(output[0], sep='\t', index=False)

@@ -22,7 +22,7 @@ rule vsearch_cluster:
     output:
         os.path.join(config["output_cluster"], "samples", "{sample}_cluster.fasta")
     threads:
-        1    
+        1
     resources:
         mem_mb = 2048,
         runtime = "1-00:00:00"

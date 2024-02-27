@@ -33,12 +33,14 @@ include: "rules/07-clustering_identity.smk"
 include: "rules/08-taxonomy.smk"
 include: "rules/09-fix_otu_table.smk"
 include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load() reads sintax files directly, see "taxonomy" here https://kasperskytte.github.io/ampvis2/reference/amp_load.html#arguments-1
-
+include: "rules/11-prep_for_phyloseq.smk"
 rule all:
     input:
         #expand(os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq"),sample=sample_dirs)
         #expand(os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")) # <- relabeled output with merge, works
         #expand(os.path.join(config['output_polish'], "samples", "{sample}.polished.fasta"), sample=sample_dirs) # <- polish output, works
         #expand(os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam"), sample=sample_dirs) # <- mapping output, works
-        expand("results/taxonomy/{id}/ampvis2_otu_{id}.tsv", id=["97", "99"]) #<- final output, let's see if it works - works for un-merged compressed files
+        expand("results/taxonomy/{id}/OTUtable_tax_{id}_sintax.tsv", id=["97", "99"]), #<- final output, let's see if it works - works for un-merged compressed files
+        expand("results/taxonomy/{id}/phyloseq_tax_{id}_sintax.tsv", id=["97", "99"]), #<- final output, let's see if it works - works for un-merged compressed files
+        expand("results/taxonomy/{id}/phyloseq_abundance_{id}_sintax.tsv", id=["97", "99"])
         #expand(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq"), sample=sample_dirs)

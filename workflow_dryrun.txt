@@ -20,7 +20,7 @@ vsearch_cluster                     3              1              1
 total                              34              1              1
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule concatenate_fastq:
     input: data/samples/SRR23176514.fastq.gz
     output: tmp/samples/SRR23176514.fastq.gz_concat.fastq
@@ -31,7 +31,7 @@ rule concatenate_fastq:
     resources: tmpdir=/tmp, mem_mb=512, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule concatenate_fastq:
     input: data/samples/SRR23176512.fastq.gz
     output: tmp/samples/SRR23176512.fastq.gz_concat.fastq
@@ -42,7 +42,7 @@ rule concatenate_fastq:
     resources: tmpdir=/tmp, mem_mb=512, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule concatenate_fastq:
     input: data/samples/SRR23176515.fastq.gz
     output: tmp/samples/SRR23176515.fastq.gz_concat.fastq
@@ -53,7 +53,7 @@ rule concatenate_fastq:
     resources: tmpdir=/tmp, mem_mb=512, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule filter_fastq:
     input: tmp/samples/SRR23176515.fastq.gz_concat.fastq
     output: tmp/samples/SRR23176515.fastq.gz_filtered.fastq
@@ -61,10 +61,10 @@ rule filter_fastq:
     jobid: 20
     reason: Missing output files: tmp/samples/SRR23176515.fastq.gz_filtered.fastq; Input files updated by another job: tmp/samples/SRR23176515.fastq.gz_concat.fastq
     wildcards: sample=SRR23176515.fastq.gz
-    resources: tmpdir=/tmp, mem_mb=10240, runtime=01:00:00
+    resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule filter_fastq:
     input: tmp/samples/SRR23176514.fastq.gz_concat.fastq
     output: tmp/samples/SRR23176514.fastq.gz_filtered.fastq
@@ -72,10 +72,10 @@ rule filter_fastq:
     jobid: 16
     reason: Missing output files: tmp/samples/SRR23176514.fastq.gz_filtered.fastq; Input files updated by another job: tmp/samples/SRR23176514.fastq.gz_concat.fastq
     wildcards: sample=SRR23176514.fastq.gz
-    resources: tmpdir=/tmp, mem_mb=10240, runtime=01:00:00
+    resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule filter_fastq:
     input: tmp/samples/SRR23176512.fastq.gz_concat.fastq
     output: tmp/samples/SRR23176512.fastq.gz_filtered.fastq
@@ -83,13 +83,13 @@ rule filter_fastq:
     jobid: 12
     reason: Missing output files: tmp/samples/SRR23176512.fastq.gz_filtered.fastq; Input files updated by another job: tmp/samples/SRR23176512.fastq.gz_concat.fastq
     wildcards: sample=SRR23176512.fastq.gz
-    resources: tmpdir=/tmp, mem_mb=10240, runtime=01:00:00
+    resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 Would remove temporary output tmp/samples/SRR23176515.fastq.gz_concat.fastq
 Would remove temporary output tmp/samples/SRR23176514.fastq.gz_concat.fastq
 Would remove temporary output tmp/samples/SRR23176512.fastq.gz_concat.fastq
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule convert_to_fasta:
     input: tmp/samples/SRR23176512.fastq.gz_filtered.fastq
     output: tmp/samples/SRR23176512.fastq.gz_filtered.fasta
@@ -99,7 +99,7 @@ rule convert_to_fasta:
     resources: tmpdir=/tmp, mem_mb=512, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule convert_to_fasta:
     input: tmp/samples/SRR23176515.fastq.gz_filtered.fastq
     output: tmp/samples/SRR23176515.fastq.gz_filtered.fasta
@@ -109,7 +109,7 @@ rule convert_to_fasta:
     resources: tmpdir=/tmp, mem_mb=512, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule convert_to_fasta:
     input: tmp/samples/SRR23176514.fastq.gz_filtered.fastq
     output: tmp/samples/SRR23176514.fastq.gz_filtered.fasta
@@ -122,7 +122,7 @@ Would remove temporary output tmp/samples/SRR23176512.fastq.gz_filtered.fastq
 Would remove temporary output tmp/samples/SRR23176515.fastq.gz_filtered.fastq
 Would remove temporary output tmp/samples/SRR23176514.fastq.gz_filtered.fastq
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule vsearch_cluster:
     input: tmp/samples/SRR23176512.fastq.gz_filtered.fasta
     output: results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta
@@ -133,7 +133,7 @@ rule vsearch_cluster:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=1-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule vsearch_cluster:
     input: tmp/samples/SRR23176515.fastq.gz_filtered.fasta
     output: results/cluster/samples/SRR23176515.fastq.gz_cluster.fasta
@@ -144,7 +144,7 @@ rule vsearch_cluster:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=1-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule vsearch_cluster:
     input: tmp/samples/SRR23176514.fastq.gz_filtered.fasta
     output: results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta
@@ -155,16 +155,16 @@ rule vsearch_cluster:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=1-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule concatenate_otus:
     input: results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta, results/cluster/samples/SRR23176515.fastq.gz_cluster.fasta
     output: results/cluster/concatenate_otus/concatenated_otus.fasta
     jobid: 9
-    reason: Missing output files: results/cluster/concatenate_otus/concatenated_otus.fasta; Input files updated by another job: results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta, results/cluster/samples/SRR23176515.fastq.gz_cluster.fasta
+    reason: Missing output files: results/cluster/concatenate_otus/concatenated_otus.fasta; Input files updated by another job: results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta, results/cluster/samples/SRR23176515.fastq.gz_cluster.fasta, results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta
     resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule mapping:
     input: results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176515.fastq.gz_cluster.fasta
     output: results/mapping/mapping/SRR23176515.fastq.gz_aligned.sam
@@ -175,51 +175,51 @@ rule mapping:
     resources: tmpdir=/tmp, mem_mb=40960, runtime=2-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule mapping:
     input: results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta
     output: results/mapping/mapping/SRR23176514.fastq.gz_aligned.sam
     log: logs/mapping/SRR23176514.fastq.gz.log
     jobid: 25
-    reason: Missing output files: results/mapping/mapping/SRR23176514.fastq.gz_aligned.sam; Input files updated by another job: results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta
+    reason: Missing output files: results/mapping/mapping/SRR23176514.fastq.gz_aligned.sam; Input files updated by another job: results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta, results/cluster/concatenate_otus/concatenated_otus.fasta
     wildcards: sample=SRR23176514.fastq.gz
     resources: tmpdir=/tmp, mem_mb=40960, runtime=2-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule mapping:
     input: results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta
     output: results/mapping/mapping/SRR23176512.fastq.gz_aligned.sam
     log: logs/mapping/SRR23176512.fastq.gz.log
     jobid: 22
-    reason: Missing output files: results/mapping/mapping/SRR23176512.fastq.gz_aligned.sam; Input files updated by another job: results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta, results/cluster/concatenate_otus/concatenated_otus.fasta
+    reason: Missing output files: results/mapping/mapping/SRR23176512.fastq.gz_aligned.sam; Input files updated by another job: results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta
     wildcards: sample=SRR23176512.fastq.gz
     resources: tmpdir=/tmp, mem_mb=40960, runtime=2-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule polish_racon:
     input: results/cluster/concatenate_otus/concatenated_otus.fasta, results/mapping/mapping/SRR23176514.fastq.gz_aligned.sam, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta
     output: results/polish/samples/SRR23176514.fastq.gz_polished.fasta
     log: logs/polish_racon/SRR23176514.fastq.gz.log
     jobid: 24
-    reason: Missing output files: results/polish/samples/SRR23176514.fastq.gz_polished.fasta; Input files updated by another job: results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta, results/mapping/mapping/SRR23176514.fastq.gz_aligned.sam
+    reason: Missing output files: results/polish/samples/SRR23176514.fastq.gz_polished.fasta; Input files updated by another job: results/mapping/mapping/SRR23176514.fastq.gz_aligned.sam, results/cluster/concatenate_otus/concatenated_otus.fasta, results/cluster/samples/SRR23176514.fastq.gz_cluster.fasta
     wildcards: sample=SRR23176514.fastq.gz
     resources: tmpdir=/tmp, mem_mb=10240, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule polish_racon:
     input: results/cluster/concatenate_otus/concatenated_otus.fasta, results/mapping/mapping/SRR23176512.fastq.gz_aligned.sam, results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta
     output: results/polish/samples/SRR23176512.fastq.gz_polished.fasta
     log: logs/polish_racon/SRR23176512.fastq.gz.log
     jobid: 8
-    reason: Missing output files: results/polish/samples/SRR23176512.fastq.gz_polished.fasta; Input files updated by another job: results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta, results/cluster/concatenate_otus/concatenated_otus.fasta, results/mapping/mapping/SRR23176512.fastq.gz_aligned.sam
+    reason: Missing output files: results/polish/samples/SRR23176512.fastq.gz_polished.fasta; Input files updated by another job: results/cluster/concatenate_otus/concatenated_otus.fasta, results/mapping/mapping/SRR23176512.fastq.gz_aligned.sam, results/cluster/samples/SRR23176512.fastq.gz_cluster.fasta
     wildcards: sample=SRR23176512.fastq.gz
     resources: tmpdir=/tmp, mem_mb=10240, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule polish_racon:
     input: results/cluster/concatenate_otus/concatenated_otus.fasta, results/mapping/mapping/SRR23176515.fastq.gz_aligned.sam, results/cluster/samples/SRR23176515.fastq.gz_cluster.fasta
     output: results/polish/samples/SRR23176515.fastq.gz_polished.fasta
@@ -230,7 +230,7 @@ rule polish_racon:
     resources: tmpdir=/tmp, mem_mb=10240, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule relabel:
     input: results/polish/samples/SRR23176514.fastq.gz_polished.fasta
     output: results/relabeled/samples/SRR23176514.fastq.gz_relabeled.fasta
@@ -241,7 +241,7 @@ rule relabel:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule relabel:
     input: results/polish/samples/SRR23176515.fastq.gz_polished.fasta
     output: results/relabeled/samples/SRR23176515.fastq.gz_relabeled.fasta
@@ -252,7 +252,7 @@ rule relabel:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule relabel:
     input: results/polish/samples/SRR23176512.fastq.gz_polished.fasta
     output: results/relabeled/samples/SRR23176512.fastq.gz_relabeled.fasta
@@ -263,7 +263,7 @@ rule relabel:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule relabel_merge:
     input: results/relabeled/samples/SRR23176512.fastq.gz_relabeled.fasta, results/relabeled/samples/SRR23176514.fastq.gz_relabeled.fasta, results/relabeled/samples/SRR23176515.fastq.gz_relabeled.fasta
     output: results/relabeled/merged/merged_polished_relabeled.fasta
@@ -273,7 +273,7 @@ rule relabel_merge:
     resources: tmpdir=/tmp, mem_mb=512, runtime=01:00:00, threads=1
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule cluster_ID:
     input: results/relabeled/merged/merged_polished_relabeled.fasta
     output: results/OTU/97/otu_cluster_97.tsv, results/OTU/97/otu_97.fa
@@ -284,7 +284,7 @@ rule cluster_ID:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=1-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule cluster_ID:
     input: results/relabeled/merged/merged_polished_relabeled.fasta
     output: results/OTU/99/otu_cluster_99.tsv, results/OTU/99/otu_99.fa
@@ -295,7 +295,7 @@ rule cluster_ID:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=1-00:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule taxonomy_sintax:
     input: results/OTU/97/otu_97.fa
     output: results/OTU/97/otu_taxonomy_97_sintax.txt
@@ -306,7 +306,7 @@ rule taxonomy_sintax:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=02:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule taxonomy_sintax:
     input: results/OTU/99/otu_99.fa
     output: results/OTU/99/otu_taxonomy_99_sintax.txt
@@ -317,18 +317,18 @@ rule taxonomy_sintax:
     resources: tmpdir=/tmp, mem_mb=2048, runtime=02:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule fix_otu_table_sintax:
     input: results/OTU/99/otu_taxonomy_99_sintax.txt, results/OTU/99/otu_cluster_99.tsv
     output: results/OTU/99/otu_table_all_99_sintax.tsv, tmp/99/otu_taxonomy_99_cut_temp_sintax.txt
     log: logs/fix_otu_table_sintax/otu_table_all_99.log
     jobid: 31
-    reason: Missing output files: results/OTU/99/otu_table_all_99_sintax.tsv; Input files updated by another job: results/OTU/99/otu_cluster_99.tsv, results/OTU/99/otu_taxonomy_99_sintax.txt
+    reason: Missing output files: results/OTU/99/otu_table_all_99_sintax.tsv; Input files updated by another job: results/OTU/99/otu_taxonomy_99_sintax.txt, results/OTU/99/otu_cluster_99.tsv
     wildcards: id=99
     resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule fix_otu_table_sintax:
     input: results/OTU/97/otu_taxonomy_97_sintax.txt, results/OTU/97/otu_cluster_97.tsv
     output: results/OTU/97/otu_table_all_97_sintax.tsv, tmp/97/otu_taxonomy_97_cut_temp_sintax.txt
@@ -341,7 +341,7 @@ rule fix_otu_table_sintax:
 Would remove temporary output tmp/99/otu_taxonomy_99_cut_temp_sintax.txt
 Would remove temporary output tmp/97/otu_taxonomy_97_cut_temp_sintax.txt
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule prep_for_ampvis2_sintax:
     input: results/OTU/99/otu_table_all_99_sintax.tsv
     output: results/taxonomy/99/otu_table_all_fixed_99_sintax.tsv
@@ -351,7 +351,7 @@ rule prep_for_ampvis2_sintax:
     wildcards: id=99
     resources: tmpdir=/tmp, mem_mb=2048, runtime=01:00:00
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule prep_for_ampvis2_sintax:
     input: results/OTU/97/otu_table_all_97_sintax.tsv
     output: results/taxonomy/97/otu_table_all_fixed_97_sintax.tsv
@@ -361,33 +361,33 @@ rule prep_for_ampvis2_sintax:
     wildcards: id=97
     resources: tmpdir=/tmp, mem_mb=2048, runtime=01:00:00
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule ampvis2_modifications_sintax:
     input: results/taxonomy/99/otu_table_all_fixed_99_sintax.tsv
-    output: results/taxonomy/99/ampvis2_otu_99.tsv
+    output: results/taxonomy/99/OTUtable_tax_99_sintax.tsv
     log: logs/taxonomy_sintax/ampvis2_modifications_99.log
     jobid: 29
-    reason: Missing output files: results/taxonomy/99/ampvis2_otu_99.tsv; Input files updated by another job: results/taxonomy/99/otu_table_all_fixed_99_sintax.tsv
+    reason: Missing output files: results/taxonomy/99/OTUtable_tax_99_sintax.tsv; Input files updated by another job: results/taxonomy/99/otu_table_all_fixed_99_sintax.tsv
     wildcards: id=99
     resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 rule ampvis2_modifications_sintax:
     input: results/taxonomy/97/otu_table_all_fixed_97_sintax.tsv
-    output: results/taxonomy/97/ampvis2_otu_97.tsv
+    output: results/taxonomy/97/OTUtable_tax_97_sintax.tsv
     log: logs/taxonomy_sintax/ampvis2_modifications_97.log
     jobid: 1
-    reason: Missing output files: results/taxonomy/97/ampvis2_otu_97.tsv; Input files updated by another job: results/taxonomy/97/otu_table_all_fixed_97_sintax.tsv
+    reason: Missing output files: results/taxonomy/97/OTUtable_tax_97_sintax.tsv; Input files updated by another job: results/taxonomy/97/otu_table_all_fixed_97_sintax.tsv
     wildcards: id=97
     resources: tmpdir=/tmp, mem_mb=1024, runtime=01:00:00
 
 
-[Wed Feb 21 13:50:59 2024]
+[Mon Feb 26 10:36:29 2024]
 localrule all:
-    input: results/taxonomy/97/ampvis2_otu_97.tsv, results/taxonomy/99/ampvis2_otu_99.tsv
+    input: results/taxonomy/97/OTUtable_tax_97_sintax.tsv, results/taxonomy/99/OTUtable_tax_99_sintax.tsv
     jobid: 0
-    reason: Input files updated by another job: results/taxonomy/97/ampvis2_otu_97.tsv, results/taxonomy/99/ampvis2_otu_99.tsv
+    reason: Input files updated by another job: results/taxonomy/97/OTUtable_tax_97_sintax.tsv, results/taxonomy/99/OTUtable_tax_99_sintax.tsv
     resources: tmpdir=/tmp
 
 Job stats:
