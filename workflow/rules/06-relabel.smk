@@ -1,8 +1,8 @@
 rule relabel:
     input:
-        os.path.join(config['output_polish'], "samples", "{sample}_polished.fasta")
+        os.path.join(config["output_dir"], "polish", "samples", "{sample}_polished.fasta")
     output:
-        os.path.join(config['output_relabeled'], "samples", "{sample}_relabeled.fasta")
+        os.path.join(config['output_dir'], "polish", "samples_relabeled", "{sample}_relabeled.fasta")
     conda:
         "../envs/vsearch.yml"
     threads:
@@ -23,9 +23,9 @@ rule relabel:
 
 rule relabel_merge:
     input:
-        expand(os.path.join(config['output_relabeled'], "samples", "{sample}_relabeled.fasta"), sample=sample_dirs)
+        expand(os.path.join(config['output_dir'], "polish", "samples_relabeled", "{sample}_relabeled.fasta"), sample=sample_dirs)
     output:
-        os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")
+        os.path.join(config['output_dir'], "polish", "samples_relabeled", "merged_polished_relabeled.fasta")
     threads:
         1
     resources:

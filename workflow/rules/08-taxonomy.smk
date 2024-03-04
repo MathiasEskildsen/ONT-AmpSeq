@@ -3,9 +3,9 @@ configfile: "config/config.yaml"
 if config['taxonomy_sintax']:
     rule taxonomy_sintax:
         input: 
-            os.path.join(config['output_OTU'], "{id}", "otu_{id}.fa")
+            os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa")
         output:
-            os.path.join(config['output_OTU'], "{id}", "otu_taxonomy_{id}_sintax.txt")
+            os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_sintax.txt")
         threads:
             config['max_threads']
         resources:
@@ -31,14 +31,14 @@ if config['taxonomy_sintax']:
 if config['taxonomy_blast']:
     rule taxonomy_blast:
         input: 
-            os.path.join(config['output_OTU'], "{id}", "otu_{id}.fa")
+            os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa")
         output:
-            os.path.join(config['output_OTU'], "{id}", "otu_taxonomy_{id}_blast.txt")
+            os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast.txt")
         threads:
             config['max_threads']
         resources:
             mem_mb = 2048,
-            runtime = "02:00:00"
+            runtime = "1-00:00:00"
         conda:
             "../envs/blast.yml"
         params:
@@ -49,11 +49,12 @@ if config['taxonomy_blast']:
         shell:
             """
             blastn \
-                -query {input} \
-                -word_size 11 \
-                -max_taget_seqs 1 \
-                -num_threads {threads} \
+                -evalue {params.e_value} \
                 -outfmt "6 qseqid sseqid stitle evalue bitscore length pident" \
-                -out {output} \
-                -db {params.db_path}
+                -word_size 11 \
+                -max_target_seqs 1 \
+                -db {params.db_path} \
+                -num_threads {threads} \
+                -query {input} \
+                -out {output}
             """

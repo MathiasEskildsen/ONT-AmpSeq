@@ -1,10 +1,10 @@
 rule polish_racon:
     input:
-        combined = os.path.join(config["output_cluster"], "concatenate_otus", "concatenated_otus.fasta"),
-        alignment = os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam"),
-        polish_target = os.path.join(config["output_cluster"], "samples", "{sample}_cluster.fasta")
+        combined = os.path.join(config["output_dir"], "vsearch", "samples", "concatenated_otus.fasta"),
+        alignment = os.path.join(config["output_dir"], "mapping", "samples", "{sample}_aligned.sam"),
+        polish_target = os.path.join(config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta")
     output:
-        os.path.join(config["output_polish"], "samples", "{sample}_polished.fasta")
+        os.path.join(config["output_dir"], "polish", "samples", "{sample}_polished.fasta")
     conda:
         "../envs/polish.yml"
     threads:

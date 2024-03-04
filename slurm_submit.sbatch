@@ -20,10 +20,10 @@ conda activate snakemake_test
 # requires nothing, 1CPU + 1G mem is enough
 
 # Render a DAG to visualize the workflow (optional)
-snakemake --dag | dot -Tsvg > results/dag.svg
+#snakemake --dag | dot -Tsvg > results/dag.svg
 
 # Main workflow
-snakemake --profile profiles/biocloud
+snakemake --profile profiles/biocloud --config taxonomy_blast=true
 
 # Generate a report once finished (optional)
-snakemake --report results/report.html
+#snakemake --report results/report.html

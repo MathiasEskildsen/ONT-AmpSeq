@@ -2,9 +2,9 @@ configfile: "config/config.yaml"
 if config['taxonomy_sintax']:
     rule prep_for_ampvis2_sintax:
         input:
-            input_all = os.path.join(config["output_OTU"], "{id}", "otu_table_all_{id}_sintax.tsv")
+            input_all = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv")
         output:
-            output_all = os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}_sintax.tsv")    
+            output_all = os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
         log:
             os.path.join(config['log_dir'], "taxonomy_sintax", 'prep_for_ampvis2_{id}.log')
         threads:
@@ -64,9 +64,9 @@ if config['taxonomy_sintax']:
 if config['taxonomy_sintax']:
     rule ampvis2_modifications_sintax:
         input:
-            os.path.join(config['output_taxonomy'], "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
+            os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
         output:
-            final = os.path.join(config['output_taxonomy'], "{id}", 'OTUtable_tax_{id}_sintax.tsv'), # <- this is the output file ready for ampvis2
+            final = os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_sintax.tsv'), # <- this is the output file ready for ampvis2
             tmp = os.path.join(config['tmp_dir'], "{id}", 'OTUtable_tax_{id}_sintax_temp.tsv')
         threads:
             1
@@ -96,24 +96,25 @@ if config['taxonomy_sintax']:
             sed -i '1 s/#OTU ID/OTU/' {output.tmp}
             awk -F'\t' 'BEGIN {{OFS="\t"}} {{for (i=1; i<=NF; i++) gsub(/^[ \t]+|[ \t]+$/, "", $i)}} 1' {output.tmp} > {output.final}
         """
-configfile: "config/config.yaml"
 if config['taxonomy_blast']:
-    rule prep_for_ampvis2_blast:
+    rule merge_abund_tax_blast:
         input:
-            otu_table = os.path.join(config['output_OTU'], "{id}", "otu_cluster_{id}.tsv"),
-            otu_tax = os.path.join(config["tmp_dir"], "{id}", "otu_taxonomy_{id}_cut_temp1_blast.txt")
+            tax = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt"),
+            abund = os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv")
         output:
-            output_all = os.path.join(config['output_taxonomy'], "{id}", "OTUtable_tax_{id}_blast.tsv")    
-        log:
-            os.path.join(config['log_dir'], "taxonomy_blast", 'prep_for_ampvis2_{id}.log')
+            os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_blast.tsv')
         threads:
             1
         resources:
-            mem_mb = 2048,
+            mem_mb = 1024,
             runtime = "01:00:00"
+        log:
+            os.path.join(config['log_dir'], "taxonomy_blast", 'merge_abund_tax_blast_{id}.log')
         run:
             import pandas as pd
-            otus_tax = pd.read_csv(input.otu_tax, sep='\t')
-            otutable = pd.read_csv(input.otu_table, sep='\t')
-            merged_data = pd.merge(otutable, otus_tax, on='OTU', how='right')
+
+            tax = pd.read_csv(input["tax"], sep='\t')
+            abund = pd.read_csv(input["abund"], sep='\t')
+
+            merged_data = pd.merge(abund, tax, on='#OTU', how='right')
             merged_data.to_csv(output[0], sep='\t', index=False)
