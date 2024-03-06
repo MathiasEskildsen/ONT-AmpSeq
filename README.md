@@ -3,8 +3,16 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥7.18.2-brightgreen.svg)](https://snakemake.github.io)
 [![GitHub actions status](https://github.com/MathiasEskildsen/smk-ONT_OTU_table/workflows/Tests/badge.svg?branch=main)](https://github.com/MathiasEskildsen/smk-ONT_OTU_table/actions?query=branch%3Amain+workflow%3ATests)
 
-This is a snakemake pipeline, designed to generate OTU-tables from barcoded ONT data. The final outputs are designed to be compatible with R-packages [ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and [phyloSeq](https://github.com/joey711/phyloseq) to visualize the microbial composition of the analyzed samples. 
-This is a pipeline still under development. In the future, figures should be made automatically and users should have the ability to infer taxonomy using [blast](https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html) formatted databases.
+## Description
+This is a snakemake pipeline, designed to generate OTU-tables from demultiplexed ONT amplicon data. The final outputs are designed to be compatible with R-packages [ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and [phyloSeq](https://github.com/joey711/phyloseq) to visualize the microbial composition of the analyzed samples.
+The pipeline expects the input files to be demultiplexed prior to running the pipeline. 
+The pipeline filters based on user-input in the config file `config/config.yaml` where it is possible to change filters in regards to amplicon length and quality, using [chopper](https://github.com/wdecoster/chopper). The read characteristics for each sample can be assesed using the shell-script script located at `scripts/nanoplot.sh`. More information regarding usage of the script can be found [here](#usage-of-stats-script).
+Biologically meaningful reads from each sample/barcode are clustered into OTU's using [Vsearch](https://github.com/torognes/vsearch) and denoising using [UNOISE3](https://doi.org/10.1093/bioinformatics/btv401) algorithm.
+OTU's from every sample/barcode are merged and polished using [Racon](https://github.com/isovic/racon).
+Taxonomy is infered to the OTU's by either [Vsearch](https://github.com/torognes/vsearch) using a curated SINTAX database (more information on databases [here](#databases)) or [blastn](https://blast.ncbi.nlm.nih.gov/doc/blast-help/) against a blastn formatted database.
+
+NOTE:
+This is a pipeline still being actively developed. 
 The workflow was constructed using the following [snakemake template](https://github.com/cmc-aau/snakemake_project_template).
 
 ## Requirements
@@ -14,6 +22,59 @@ All required tools are automatically installed by Snakemake using conda environm
 Adjust the `config.yaml` files under both `config/` and `profiles/` accordingly, then simply run `snakemake --profile profiles/<subfolder>` or submit a SLURM job using the `slurm_submit.sbatch` example script.
 The usage of this workflow is also described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
 
+## Usage of stats script
+The stats script can be used to visualize read characteristics of the amplicon-sequencing data produced by ONT. The script works on both compressed and decompressed ``` .fastq ``` files. The files can be located in the same directory or individual sub-directores. However, if the files are located in the same directory, files originating from the same barcode have to be merged before running the script. 
+Input directory structure examples:
+```
+../data
+└── samples
+    ├── barcode01
+    │   ├── PAQ88430_pass_barcode01_807aee6b_5f7fc5bf_0.fastq
+    │   ├── PAQ88430_pass_barcode01_807aee6b_5f7fc5bf_1.fastq
+    │   └── PAQ88430_pass_barcode01_807aee6b_5f7fc5bf_2.fastq
+    ├── barcode02
+    │   ├── PAQ88430_pass_barcode02_807aee6b_5f7fc5bf_0.fastq
+    │   ├── PAQ88430_pass_barcode02_807aee6b_5f7fc5bf_1.fastq
+    │   └── PAQ88430_pass_barcode02_807aee6b_5f7fc5bf_2.fastq
+    └── barcode03
+        ├── PAQ88430_pass_barcode03_807aee6b_5f7fc5bf_0.fastq
+        ├── PAQ88430_pass_barcode03_807aee6b_5f7fc5bf_1.fastq
+        └── PAQ88430_pass_barcode03_807aee6b_5f7fc5bf_2.fastq
+```
+```
+../data
+└── samples
+    ├── PAQ88430_pass_barcode01_807aee6b.fastq
+    ├── PAQ88430_pass_barcode02_807aee6b.fastq
+    └── PAQ88430_pass_barcode03_807aee6b.fastq
+```
+
+
+Usage:
+```
+-- insert full pipeline name: Nanopore Statistics with NanoPlot
+usage: nanoplot [-h] [-o path] [-i path] [-t value] [-j value]
+
+where:
+    -h Show this help message.
+    -o Path where directories should be created and files should be stored
+    -i Full path to .fastq.gz files from Nanopore, example: /Full/Path/to/nanopore_data/ONT_RUN_ID/fastq_pass  
+    -j Number of parallel jobs [default = 1]
+    -t Number of threads [default = 1]
+    Important note:
+    Remember to activate your conda environment, containing nanoplot version 1.42.0, before running the script.
+    If installed through stats.yml, activate the environment with mamba activate stats.
+```
+Example command:
+
+```
+mamba activate stats
+bash ../scripts/nanoplot.sh -o ../out_dir -i ../data/samples -t 1 -j 1 
+```
+The command will create a directory under your chosen directory (or to a full path) called `out_dir` containing three sub-directories `stats`, `fastqs` and `joblog`. The `stats` sub-directory will contain plots for each sample, in their respective sub-directory, the `LengthvsQualityScatterPlot_dot.png` provides a great overview of the reads. `fastqs` contains unzipped merged fastq files, can be removed. `joblog` contains a text file with the command-line output. Can be useful for debugging.
+
+## Databases
+Flesh out description
 
 # TODO
 * Create phyloseq-ready output

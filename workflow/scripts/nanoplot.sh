@@ -19,12 +19,12 @@ usage: $(basename "$0" .sh) [-h] [-o path] [-i path] [-t value] [-j value]
 where:
     -h Show this help message.
     -o Path where directories should be created and files should be stored
-    -i Full path to .fastq.gz files from Nanopore, example: /Full/Path/to/nanopore_data/ONT_RUN_ID/fastq_pass  
+    -i Full path to .fastq files, example: /Full/Path/to/nanopore_data/ONT_RUN_ID/fastq_pass  
     -j Number of parallel jobs [default = 1]
     -t Number of threads [default = 1]
     Important note:
     Remember to activate your conda environment, containing nanoplot version 1.42.0, before running the script.
-    If installed with through stats.yml, activate the environment with mamba activate stats.
+    If installed through stats.yml, activate the environment with mamba activate stats.
 "
 # Process command-line options
 while getopts 'o:i:t:j:h' OPTION; do
