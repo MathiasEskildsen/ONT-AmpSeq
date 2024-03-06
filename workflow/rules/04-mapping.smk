@@ -34,7 +34,6 @@ rule mapping:
         minimap2 \
         -ax map-ont \
         -K500M \
-        -f2000 \
         -t {threads} \
         --secondary=no \
         {input.samples} \

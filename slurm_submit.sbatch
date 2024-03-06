@@ -1,5 +1,5 @@
 #!/usr/bin/bash -l
-#SBATCH --job-name=<snakemake_template>
+#SBATCH --job-name=smk-zymo
 #SBATCH --output=/home/bio.aau.dk/mk20aj/joblog/job_%j_%x.out
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -9,6 +9,7 @@
 #SBATCH --mem=1G
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=mhes@bio.aau.dk
+#SBATCh --time=3-00:00:00
 
 # Exit on first error and if any variables are unset
 set -eu
@@ -23,7 +24,7 @@ conda activate snakemake_test
 #snakemake --dag | dot -Tsvg > results/dag.svg
 
 # Main workflow
-snakemake --profile profiles/biocloud --config taxonomy_blast=true
+snakemake --profile profiles/biocloud
 
 # Generate a report once finished (optional)
 #snakemake --report results/report.html
