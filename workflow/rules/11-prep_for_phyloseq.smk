@@ -21,7 +21,7 @@ if config['taxonomy_sintax']:
         input:
             input_OTU = os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_sintax.tsv')
         output:
-            phyloseq_tax = temp(os.path.join(config['tmp_dir'], "{id}", 'phyloseq_tax_tmp_{id}_sintax.tsv'))
+            phyloseq_tax = os.path.join(config['tmp_dir'], "{id}", 'phyloseq_tax_tmp_{id}_sintax.tsv')
         log: 
             os.path.join(config['log_dir'], "phyloseq_tax", 'phyloseq_{id}.log')
         threads:
@@ -41,9 +41,7 @@ if config['taxonomy_sintax']:
                     writer = csv.writer(csvoutput, delimiter='\t')
 
                     for row in reader:
-                        if 'kingdom' in row:
-                            kingdom_index = row.index('kingdom')
-                        writer.writerow(row[:1] + row[kingdom_index:])
+                        writer.writerow([row[0]] + row[-7:])
 if config['taxonomy_sintax']:
     rule phyloseq_tax1_sintax:
         input:
@@ -64,7 +62,7 @@ if config['taxonomy_sintax']:
                 for line in f_in:
                     fields = line.split('\t')
                     modified_fields = [fields[0]] + [field[3:] for field in fields[1:]]
-                    f_out.write('\t'.join(modified_fields))
+                    f_out.write('\t'.join(modified_fields) + '\n')
 if config['taxonomy_blast']:
     rule individual_outputs_blast:
         input:
