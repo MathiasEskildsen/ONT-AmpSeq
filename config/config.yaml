@@ -1,12 +1,9 @@
 # This file is for various variables used throughout the workflow.
 # Everything else regarding how things are run should go in the profile config
-
 ## Chose Taxonomy approach
 ## If SINTAX is wanted, set the taxonomy_sintax to true and supply path to sintax formatted database
-taxonomy_sintax: true
 db_path_sintax: "/databases/midas/MiDAS5.2_20231221/output/FLASVs_w_sintax.fa"
 ## If Blast taxonomy is wanted, set the taxonomy_blast to true and supply path to blast formatted database
-taxonomy_blast: true
 db_path_blast: "/home/bio.aau.dk/mk20aj/databases/MIDAS"
 evalue: 1e-10 # E-value cutoff for blast
 
@@ -31,4 +28,4 @@ quality_cut_off: 23 # minimum quality score to keep (phred-score)
 # Not ideal, but threads can be set in multiple places, so the best is to set 
 # this to a large number and instead adjust the max-threads (per rule) 
 # in the profile config.yaml to suit your particular computing setup.
-max_threads: 128
+max_threads: 32
