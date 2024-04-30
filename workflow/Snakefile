@@ -1,10 +1,8 @@
-# Main entrypoint of the workflow. 
-# Please follow the best practices: 
-# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+# Main entrypoint of the workflow.
+# Please change the rule all to to your needs (blast or sintax or both, 97 or 99% similarity, etc.)
+# You can get both sintax and blast annotation by adding the corresponding output in the rule all.
 import os
 import re
-import glob
 from snakemake.utils import min_version
 
 min_version("7.18.2")
@@ -13,18 +11,9 @@ configfile: "config/config.yaml"
 
 # list all subfolders in input_dir
 sample_dirs = os.listdir(config['input_dir'])
-# list all files in output_taxonomy folder 'ampvis2_otu_*.tsv'
-ampvis_otu_files = glob.glob(os.path.join(config['output_taxonomy'], "ampvis2_otu_*.tsv"))
-
 
 include: "rules/01-concatenate_fastq.smk"
 include: "rules/02-filtering.smk"
-# add:
-# - strip primers/barcodes/adapters
-# - need alignment first to align 3' ends before clustering?
-# orient reads to the same strand
-# dereplicate
-# remove singletons (must with nanopore!)
 include: "rules/03-clustering.smk"
 include: "rules/04-mapping.smk"
 include: "rules/05-polish_racon.smk"
@@ -34,13 +23,14 @@ include: "rules/08-taxonomy.smk"
 include: "rules/09-fix_otu_table.smk"
 include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load() reads sintax files directly, see "taxonomy" here https://kasperskytte.github.io/ampvis2/reference/amp_load.html#arguments-1
 include: "rules/11-prep_for_phyloseq.smk"
+
+## Outputs for blast
+#expand("results/final/{id}/OTUtable_tax_{id}_blast.tsv", id=["97", "99"]), #<- Final output, tax + abundance for ampvis2 using blast annotation
+#expand("results/final/{id}/phyloseq_tax_{id}_blast.tsv", id=["97", "99"]), #<- Taxonomy output for phyloseq using blast annotation
+#expand("results/final/{id}/phyloseq_abundance_{id}_blast.tsv", id=["97", "99"]), #<- Abundance output for phyloseq using blast annotation
 rule all:
     input:
-        #expand(os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq"),sample=sample_dirs)
-        #expand(os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")) # <- relabeled output with merge, works
-        #expand(os.path.join(config['output_polish'], "samples", "{sample}.polished.fasta"), sample=sample_dirs) # <- polish output, works
-        #expand(os.path.join(config["output_mapping"], "mapping", "{sample}_aligned.sam"), sample=sample_dirs) # <- mapping output, works
-        expand("results/taxonomy/{id}/OTUtable_tax_{id}_sintax.tsv", id=["97", "99"]), #<- final output, let's see if it works - works for un-merged compressed files
-        expand("results/taxonomy/{id}/phyloseq_tax_{id}_sintax.tsv", id=["97", "99"]), #<- final output, let's see if it works - works for un-merged compressed files
-        expand("results/taxonomy/{id}/phyloseq_abundance_{id}_sintax.tsv", id=["97", "99"])
-        #expand(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq"), sample=sample_dirs)
+        expand(os.path.join(config['output_dir'], "final", "{id}", "OTUtable_tax_{id}_sintax.tsv"), id=["97", "99"]),
+        expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_tax_{id}_sintax.tsv"), id=["97", "99"]),
+        expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_abundance_{id}_sintax.tsv"), id=["97", "99"]),
+        expand(os.path.join(config['output_dir'], "final", "report", "total_reads.tsv"))

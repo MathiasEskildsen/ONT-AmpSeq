@@ -1,9 +1,9 @@
 rule cluster_ID:
     input:
-        os.path.join(config['output_relabeled'], "merged", "merged_polished_relabeled.fasta")
+        os.path.join(config['output_dir'], "polish", "samples_relabeled", "merged_polished_relabeled.fasta")
     output:
-        otu_table = os.path.join(config['output_OTU'], "{id}", "otu_cluster_{id}.tsv"),
-        otu_centroids = os.path.join(config['output_OTU'], "{id}", "otu_{id}.fa")
+        otu_table = os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv"),
+        otu_centroids = os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa")
     threads:
         config['max_threads']
     resources:

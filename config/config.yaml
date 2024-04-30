@@ -1,24 +1,14 @@
 # This file is for various variables used throughout the workflow.
 # Everything else regarding how things are run should go in the profile config
-
 ## Chose Taxonomy approach
 ## If SINTAX is wanted, set the taxonomy_sintax to true and supply path to sintax formatted database
-taxonomy_sintax: true
 db_path_sintax: "/databases/midas/MiDAS5.2_20231221/output/FLASVs_w_sintax.fa"
 ## If Blast taxonomy is wanted, set the taxonomy_blast to true and supply path to blast formatted database
-taxonomy_blast: false
 db_path_blast: "/home/bio.aau.dk/mk20aj/databases/MIDAS"
 evalue: 1e-10 # E-value cutoff for blast
 
 ## Output folders
 output_dir: "results"
-output_cluster: "results/cluster"
-output_mapping: "results/mapping"
-output_polish: "results/polish"
-output_relabeled: "results/relabeled"
-output_OTU: "results/OTU"
-output_taxonomy: "results/taxonomy"
-
 
 # input folder is expected to contain a subfolder for each sampleID/barcode
 # then all fastq files in each subfolder is concatenated and the folder name is 
@@ -38,4 +28,4 @@ quality_cut_off: 23 # minimum quality score to keep (phred-score)
 # Not ideal, but threads can be set in multiple places, so the best is to set 
 # this to a large number and instead adjust the max-threads (per rule) 
 # in the profile config.yaml to suit your particular computing setup.
-max_threads: 128
+max_threads: 32

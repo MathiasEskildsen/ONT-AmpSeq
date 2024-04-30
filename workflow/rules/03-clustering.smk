@@ -20,7 +20,7 @@ rule vsearch_cluster:
     input:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
     output:
-        os.path.join(config["output_cluster"], "samples", "{sample}_cluster.fasta")
+        os.path.join(config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta")
     threads:
         1
     resources:

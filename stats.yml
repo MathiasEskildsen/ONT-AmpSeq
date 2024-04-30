@@ -1,0 +1,8 @@
+name: stats
+channels:
+  - bioconda
+  - conda-forge
+  - anaconda
+dependencies:
+ - nanoplot=1.42.0 # to run stat script "scripts/nanoplot.sh"
+ - parallel # GNU parallel
