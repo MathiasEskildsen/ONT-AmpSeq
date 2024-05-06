@@ -30,12 +30,13 @@ rule taxonomy_blast:
     input: 
         os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa")
     output:
-        os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast.txt")
+        tax_raw = os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast.txt"),
+        tax_uniq = os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast_uniq.txt")
     threads:
         config['max_threads']
     resources:
-        mem_mb = 2048,
-        runtime = "1-00:00:00"
+        mem_mb = 40960,
+        runtime = "14-00:00:00"
     conda:
         "../envs/blast.yml"
     params:
@@ -47,11 +48,14 @@ rule taxonomy_blast:
         """
         blastn \
             -evalue {params.e_value} \
-            -outfmt 6 \
+            -outfmt "6 qseqid stitle evalue bitscore length pident" \
             -word_size 11 \
             -max_target_seqs 1 \
             -db {params.db_path} \
             -num_threads {threads} \
             -query {input} \
-            -out {output}
+            -out {output.tax_raw}
+        
+        awk '!seen[$0]++' {output.tax_raw} > {output.tax_uniq}
         """
+        

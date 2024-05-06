@@ -32,6 +32,8 @@ rule relabel_merge:
         mem_mb = 512,
         runtime = "01:00:00",
         threads = 1
+    conda:
+        "../envs/vsearch.yml"
     log:
         os.path.join(config['log_dir'], "relabel", "merged_polished_relabeled.log")
     shell:

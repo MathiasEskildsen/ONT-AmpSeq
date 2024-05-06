@@ -20,7 +20,7 @@ rule fix_otu_table_sintax:
         """
 rule prep_input_blast:
     input:
-        os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast.txt")
+        os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast_uniq.txt")
     output:
         os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt")
     threads:

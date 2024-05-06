@@ -12,6 +12,10 @@ rule convert_to_fasta:
     resources:
         mem_mb = 512,
         runtime = "01:00:00" # - Adding run time to the rule
+    conda:
+        "../envs/vsearch.yml"
+    log:
+        os.path.join(config["log_dir"], "convert_to_fasta", "{sample}.log")
     shell:
         """
         sed -n '1~4s/^@/>/p;2~4p' {input} > {output}    

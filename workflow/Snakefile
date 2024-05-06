@@ -12,6 +12,7 @@ configfile: "config/config.yaml"
 # list all subfolders in input_dir
 sample_dirs = os.listdir(config['input_dir'])
 
+
 include: "rules/01-concatenate_fastq.smk"
 include: "rules/02-filtering.smk"
 include: "rules/03-clustering.smk"

@@ -46,6 +46,8 @@ rule merge_read_count:
     resources:
         mem_mb = 1024,
         runtime = "01:00:00"
+    conda:
+        "../envs/filtering.yml"
     log: 
         os.path.join(config['log_dir'], "merge_read_count", "merge_read_count.log")
     shell:
