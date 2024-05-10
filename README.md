@@ -38,10 +38,10 @@ cd path/to/project-workdir
 In the following steps, we will assume that you have chosen and are inside of that directory.
 Second, run:
 ```
-snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --tag <insert release version>
+snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --branch main
 ```
 
-Snakedeploy will create two folders `workflow` and `config`. The formor contains the deployment of the chosen workflow as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows), the latter contains configuration files which will be modified in the next step in order to configure the workflow to your needs. Later, when executing the workflow, SNakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
+Snakedeploy will create two folders `workflow` and `config`. The former contains the deployment of the chosen workflow as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows), the latter contains configuration files which will be modified in the next step in order to configure the workflow to your needs. Later, when executing the workflow, SNakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
 
 Third, consider to put this directory under version contraol, e.g. by managing it [via a (private) Github repository](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
 ### Step 3: Configure the workflow
