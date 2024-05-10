@@ -14,4 +14,4 @@ jobs:
         id: release
         with:
           release-type: go # just keep a changelog, no version anywhere outside of git tags
-          package-name: <repo>
+          package-name: ONT-AmpSeq
