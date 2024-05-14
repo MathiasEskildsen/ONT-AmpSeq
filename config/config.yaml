@@ -17,7 +17,7 @@ db_path_blast: "/home/bio.aau.dk/mk20aj/databases/MIDAS"
 evalue: 1e-10 # E-value cutoff for blast
 
 # Parameters for filtering reads (filtering.smk)
-# Change based on amplicon length and desired quiality
+# Change based on amplicon length and desired quality
 length_lower_limit: 1200 # minimum length of reads to keep
 length_upper_limit: 1600 # maximum length of reads to keep
 quality_cut_off: 23 # minimum quality score to keep (phred-score)
