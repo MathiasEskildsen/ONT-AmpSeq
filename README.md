@@ -16,16 +16,35 @@ This is a workflow still being actively developed.
 The workflow was constructed using the following [snakemake template](https://github.com/cmc-aau/snakemake_project_template).
 
 ## Requirements
+This workflow requires conda or mamba to install the required tools for the pipeline. Snakemake will automatically install the correct version of the tools required for the pipeline. However, for first time use you need to install conda or mamba and create an environment containing snakemake and snakedeploy.
+
+Conda can be installed by following this [guide](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) and Mamba can be installed by following this [guide]().
+It is recommended to follow the original documentation, however below is the commands used to freshly install the software on a Linux machine as per their documentation.
+Miniconda:
+```
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm -rf ~/miniconda3/miniconda.sh
+```  
+Initialize Miniconda:
+```
+~/miniconda3/bin/conda init bash
+~/miniconda3/bin/conda init zsh
+```
+
+
+
 All required tools are automatically installed by Snakemake using conda environments, however Snakemake itself needs to be installed first. Load a software module with Snakemake, use a native install, or use the `environment.yml` file to create a conda environment for this particular project using fx `mamba env create -n <snakemake_template> -f environment.yml`.
 
 ## Usage of workflow
 The usage of this workflow is also described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=MathiasEskildsen/ONT-AmpSeq).
 
-## Usage
+## Usage with snakedeploy
 ### Step 1: Install Snakemake and Snakedeploy
 Snakemake and Snakedeploy are best installed via the [Mamba package manager](https://github.com/mamba-org/mamba) (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). For other options see [here](https://github.com/mamba-org/mamba).
-Given that Mamba is installed, run:
-`mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy`
+Given that Mamba (If Miniconda is installed, the mamba can be changed for conda) is installed, run:
+`mamba create -c conda-forge -c bioconda --name snakemake snakemake=7.18.2 snakedeploy`
 This install both Snakemake and Snakedeploy in their own isolated environment. For all the following commands ensure that this environment is activated with the following command:
 `mamba activate snakemake`
 ### Step 2: Deploy workflow
@@ -41,21 +60,29 @@ Second, run:
 snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --branch main
 ```
 
-Snakedeploy will create two folders `workflow` and `config`. The former contains the deployment of the chosen workflow as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows), the latter contains configuration files which will be modified in the next step in order to configure the workflow to your needs. Later, when executing the workflow, SNakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
+Snakedeploy will create two folders `workflow` and `config`. The former contains the deployment of the chosen workflow as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows), the latter contains configuration files which will be modified in the next step in order to configure the workflow to your needs. Later, when executing the workflow, Snakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
 
-Third, consider to put this directory under version contraol, e.g. by managing it [via a (private) Github repository](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
+Third, consider to put this directory under version control, e.g. by managing it [via a (private) Github repository](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
 ### Step 3: Configure the workflow
-* `input_dir`: Path to the input folder, containing fastq files in compressed or decompressed format. The pipeline expects the input files to conform to 1 of 2 directory structures, see [here](## Usage of stats script) for more information of directory structures.
+* `input_dir`: Path to the input folder, containing fastq files in compressed or decompressed format. The pipeline expects the input files to conform to 1 of 2 directory structures, see [here](#usage-of-stats-script) for more information of directory structures.
 * `output_dir`: Path to output directory with the final results of the pipeline and a few intermediary files, thay might prove useful for other purposes.
 * `tmp_dir`: Directory for temporary files.
 * `log_dir`: Directory for log files for all invoked rules.
 * `db_path_sintax`: Database to infer taxonomy using the SINTAX algorithm. Should contain SequenceID, taxonomy string and a fasta sequence.
 * `db_path_blast`: Nucleotide blast formatted database to infer taxonomy using BLASTn algorithm.
 * `evalue`: E-value cutoff for blast. Default = 1e-10.
-* `length_lower_limit`: Argument passed on to `chopper` for filtering reads.
-* `length_upper_limit`: Argument passed on to `chopper` for filtering reads.
-* `quality_cut_off`: Argument passed on to `chopper` for filtering reads.
-* `max_threads`: Maximum number of threads that can be used for any given rule
+* `length_lower_limit`: Default = 1200. Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh.
+* `length_upper_limit`: Default = 1600. Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh.
+* `quality_cut_off`: Default = 23. Argument passed on to `chopper` for filtering reads. Appropriate value depends on the quality of your sequencing data. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh. It is recommended to pick a Q-score >20, if your data permits it.
+* `max_threads`: Maximum number of threads that can be used for any given rule.
+* `include_blast_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
+* `include_sintax_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.
+
+The workflow configurations can also be changed directly in the command line, for example:
+
+```
+
+```
 
 ### Step 4: Run the workflow
 Given that the workflow has been properly deployed and configured, it can be executed as follows.
@@ -65,7 +92,7 @@ snakemake --cores all --use-conda
 ```
 Given that you have chosen your project working-directory as previously stated. Snakemake will automatically detect the main `Snakefile` in the `workflow` subfolder and execute the workflow module that has been defined by the deployment in step 2.
 
-For further options, fx. for cluster and cloud execution, see [the docs](https://snakemake.readthedocs.io/en/stable/). If you are an AAU user, see [this](## Usage of workflow through SLURM (AAU Biocloud users)) section.
+For further options, fx. for cluster and cloud execution, see [the docs](https://snakemake.readthedocs.io/en/stable/). If you are an AAU user, see [this](#usage-of-workflow-through-slurm-aau-biocloud-users) section.
 ### Step 5: Generate report
 After finalizing your data analysis, you can automatically generate an interactive visual HTML report for inspection of results together with parameters and code inside of the browser using:
 ```

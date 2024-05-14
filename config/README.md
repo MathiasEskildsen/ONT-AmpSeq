@@ -8,9 +8,9 @@
 - `db_path_sintax`: Database to infer taxonomy using the SINTAX algorithm. Contains sequenceID, taxonomy string and fasta sequence. 
 - `db_path_blast`: Nucleotide blast formatted database to infer taxonomy using BLASTn algorithm.
 - `evalue`: E-value cutoff for blast. Default = 1e-10.
-- `length_lower_limit`: Argument passed on to `chopper` for filtering reads.
-- `length_upper_limit`: Argument passed on to `chopper` for filtering reads.
-- `quality_cut_off`: Argument passed on to `chopper` for filtering reads.
+- `length_lower_limit`: Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper script scripts/nanoplot.sh 
+- `length_upper_limit`: Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper script scripts/nanoplot.sh 
+- `quality_cut_off`: Argument passed on to `chopper` for filtering reads. Appropriate value depends on the quality of your sequencing data. This can be checked by running the helper script scripts/nanoplot.sh. It is recommended to pick a Q-score >20, if your data permits it.
 - `max_threads`: Maximum number of threads that can be used for any rule.
-
-## Database files
+- `include_blast_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
+- `include_sintax_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.
