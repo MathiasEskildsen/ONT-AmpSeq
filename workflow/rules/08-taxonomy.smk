@@ -36,7 +36,7 @@ rule taxonomy_blast:
         config['max_threads']
     resources:
         mem_mb = 40960,
-        runtime = "14-00:00:00"
+        runtime = "7-00:00:00"
     conda:
         "../envs/blast.yml"
     params:

@@ -1,0 +1,13 @@
+input_dir: "test_data"
+output_dir: "output"
+tmp_dir: "tmp"
+log_dir: "logs"
+db_path_sintax: "databases/SINTAX_MiDAS_5.3_extract.fa"
+db_path_blast: "databases/databases"
+evalue: 1e-10
+length_lower_limit: 1200
+length_upper_limit: 1600
+quality_cut_off: 23
+max_threads: 16
+include_blast_output: true
+include_sintax_output: true

@@ -1,27 +1,26 @@
 #!/usr/bin/bash -l
-#SBATCH --job-name=<snakemake_template>
+#SBATCH --job-name=ONT-AmpSeq
 #SBATCH --output=job_%j_%x.out
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=general
+#SBATCH --partition=default-op
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=1G
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=abc@bio.aau.dk
-#SBATCh --time=1-00:00:00
-
+#SBATCH --time=7-00:00:00
 # Exit on first error and if any variables are unset
 set -eu
 
 # Activate conda environment with only snakemake
-conda activate <snakemake_template>
+conda activate snakemake
 
 # Start workflow using ressources defined in the profile. Snakemake itself 
 # requires nothing, 1CPU + 1G mem is enough
 
 # Render a DAG to visualize the workflow (optional)
-snakemake --dag | dot -Tsvg > results/dag.svg
+snakemake --dag | dot -Tpdf > results/dag.pdf
 
 # Main workflow
 snakemake --profile profiles/biocloud

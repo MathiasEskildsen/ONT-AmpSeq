@@ -15,11 +15,20 @@ NOTE:
 This is a workflow still being actively developed.
 The workflow was constructed using the following [snakemake template](https://github.com/cmc-aau/snakemake_project_template).
 
+## Table of Contents
+- [Requirements](#requirements)
+- [Usage of Workflow with Snakedeploy](#usage-of-workflow-snakedeploy)
+- [Uage of Workflow AAU Biocloud Users](#usage-of-workflow-aau-biocloud-hpc-users)
+- [Outputs](#outputs)
+- [Stats script](#usage-of-stats-script)
+- [Database Choice](#databases)
 ## Requirements
-This workflow requires conda or mamba to install the required tools for the pipeline. Snakemake will automatically install the correct version of the tools required for the pipeline. However, for first time use you need to install conda or mamba and create an environment containing snakemake and snakedeploy.
+Requires a Linux OS or WSL 
+
+This workflow requires conda or mamba to install the required tools for the pipeline. Snakemake will automatically install the correct version of the tools required for the pipeline. However, for the first time use you need to install conda or mamba and create an environment containing snakemake and snakedeploy.
 
 Conda can be installed by following this [guide](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) and Mamba can be installed by following this [guide]().
-It is recommended to follow the original documentation, however below is the commands used to freshly install the software on a Linux machine as per their documentation.
+It is recommended to follow the original documentation, however below is the commands used to freshly install the software on a Linux machine as per their documentation (14-05-2024).
 Miniconda:
 ```
 mkdir -p ~/miniconda3
@@ -32,20 +41,23 @@ Initialize Miniconda:
 ~/miniconda3/bin/conda init bash
 ~/miniconda3/bin/conda init zsh
 ```
+Add channels (for fresh install):
+```
+conda config --add channels conda-forge
+conda config --add channels bioconda
+```
 
+Now your conda install is set-up and you're ready to set-up your environment.
 
-
-All required tools are automatically installed by Snakemake using conda environments, however Snakemake itself needs to be installed first. Load a software module with Snakemake, use a native install, or use the `environment.yml` file to create a conda environment for this particular project using fx `mamba env create -n <snakemake_template> -f environment.yml`.
-
-## Usage of workflow
+## Usage of workflow (Snakedeploy)
 The usage of this workflow is also described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=MathiasEskildsen/ONT-AmpSeq).
-
 ## Usage with snakedeploy
 ### Step 1: Install Snakemake and Snakedeploy
-Snakemake and Snakedeploy are best installed via the [Mamba package manager](https://github.com/mamba-org/mamba) (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). For other options see [here](https://github.com/mamba-org/mamba).
-Given that Mamba (If Miniconda is installed, the mamba can be changed for conda) is installed, run:
+Snakemake and Snakedeploy are best installed via the [Mamba package manager](https://github.com/mamba-org/mamba) (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). For other options see [here](https://github.com/mamba-org/mamba). Or refer to the Miniconda installation and quick set-up in [Requirements](#requirements).
+
+Given that Mamba (If Miniconda is installed, the mamba can be changed for conda) is installed, set-up your enviroment by running:
 `mamba create -c conda-forge -c bioconda --name snakemake snakemake=7.18.2 snakedeploy`
-This install both Snakemake and Snakedeploy in their own isolated environment. For all the following commands ensure that this environment is activated with the following command:
+This installs both Snakemake and Snakedeploy in their own isolated environment. For all the following commands ensure that this environment is activated with the following command:
 `mamba activate snakemake`
 ### Step 2: Deploy workflow
 Given that Snakemake and Snakedeploy are installed and activated (see step 1), the workflow can be deployed as follows:
@@ -63,27 +75,31 @@ snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --b
 Snakedeploy will create two folders `workflow` and `config`. The former contains the deployment of the chosen workflow as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows), the latter contains configuration files which will be modified in the next step in order to configure the workflow to your needs. Later, when executing the workflow, Snakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
 
 Third, consider to put this directory under version control, e.g. by managing it [via a (private) Github repository](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
+
 ### Step 3: Configure the workflow
+The workflow needs to be configured according to your directory structure and according to your needs. Below is an explaination of the settings that can be configured. These can be changed directly in the config file located at `path/to/project-workdir/config/config.yaml` or changed by command line arguments, explained later.
 * `input_dir`: Path to the input folder, containing fastq files in compressed or decompressed format. The pipeline expects the input files to conform to 1 of 2 directory structures, see [here](#usage-of-stats-script) for more information of directory structures.
 * `output_dir`: Path to output directory with the final results of the pipeline and a few intermediary files, thay might prove useful for other purposes.
-* `tmp_dir`: Directory for temporary files.
+* `tmp_dir`: Directory for temporary files, temporary files will be removed after a succesful run.
 * `log_dir`: Directory for log files for all invoked rules.
-* `db_path_sintax`: Database to infer taxonomy using the SINTAX algorithm. Should contain SequenceID, taxonomy string and a fasta sequence.
-* `db_path_blast`: Nucleotide blast formatted database to infer taxonomy using BLASTn algorithm.
+* `db_path_sintax`: Database to infer taxonomy using the SINTAX algorithm. Should contain SequenceID, taxonomy string and a fasta sequence. More information at [databases](#databases).
+* `db_path_blast`: Nucleotide blast formatted database to infer taxonomy using BLASTn algorithm. More information at [databases](#databases).
 * `evalue`: E-value cutoff for blast. Default = 1e-10.
 * `length_lower_limit`: Default = 1200. Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh.
 * `length_upper_limit`: Default = 1600. Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh.
-* `quality_cut_off`: Default = 23. Argument passed on to `chopper` for filtering reads. Appropriate value depends on the quality of your sequencing data. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh. It is recommended to pick a Q-score >20, if your data permits it.
+* `quality_cut_off`: Default = 23. Argument passed on to `chopper` for filtering reads. Appropriate value depends on the quality of your sequencing data. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh. It is recommended to pick a Q-score >20, if your data permits it. 
 * `max_threads`: Maximum number of threads that can be used for any given rule.
 * `include_blast_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
 * `include_sintax_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.
 
-The workflow configurations can also be changed directly in the command line, for example:
-
+As previously mentioned, the workflow configurations can also be changed directly in the command line. Every configuration can be changed, keep in mind, that configurations without specified changes in the command line will use the value specified in the configuration file (`path/to/project-workdir/config/config.yaml`).
+Example of changing a few configurations from their default:
 ```
-
+cd path/to/project-workdir
+mamba activate snakemake
+snakemake --cores all --use-conda --config include_blast_output=False db_path_sintax=/path/to/SINTAX_DATABASE.fa length_lower_limit=400 length_upper_limit=800 quality_cut_off=20
 ```
-
+The code snippet above will; choose your project working directory, enabling snakemake to locate the snakefile and configuration file. Activate your environment containing snakemake, as described in [step1](#step-1-install-snakemake-and-snakedeploy). Finally, it will run the snakemake workflow, filtering out reads shorter than 400bp, longer than 800bp and with a Q-score <20. It will output OTU-tables with taxonomy annotated by a sintax database. 
 ### Step 4: Run the workflow
 Given that the workflow has been properly deployed and configured, it can be executed as follows.
 For running the workflow while deploying any necessary software via conda using the [Mamba package manager](https://github.com/mamba-org/mamba), run Snakemake with:
@@ -100,10 +116,30 @@ snakemake --report report.zip
 ```
 The resulting `report.zip` file can be passed on to collaborators, provided as a supplementary file in publications, or uploaded to a service like [Zenodo](https://zenodo.org/) in order to obtain a citable [DOI](https://en.wikipedia.org/wiki/Digital_object_identifier).
 
-## Usage of workflow through SLURM (AAU Biocloud users)
-Adjust the `config.yaml` files under both `config/` and `profiles/` accordingly, then simply run `snakemake --profile profiles/biocloud` or submit a SLURM job using the `slurm_submit.sbatch` example script.
+## Usage of workflow (AAU BioCloud HPC users)
+AAU BioCloud HPC users can also use the snakedeploy [step-by-step](#usage-with-snakedeploy), however it is recommended to follow the guide below as this will include scripts to help you submit jobs via. SLURM. If you want further guidance on snakemake and BioCloud usage refer to the [user guide](https://cmc-aau.github.io/biocloud-docs/guides/snakemake/intro/).
 
+Change the path to your project-directory
+```
+cd /path/to/project-dir
+wget -O https://github.com/MathiasEskildsen/ONT-AmpSeq/archive/refs/heads/main.tar.gz | tar -xz
+```
+Install dependencies (BioCloud users already have mamba installed natively)
+```
+cd ONT-AmpSeq-main
+mamba env create -f environment.yml
+```
+Configure `config/config.yaml` as described [previously](#step-3-configure-the-workflow). Then simply run `snakemake --profile profiles/biocloud` or submit a SLURM job using the `slurm_submit.sbatch` example script. If running the pipeline through `slurm_submit.sbatch`, remember to change the `#SBATCH` arguments at the top of the script, to fit your run (--job-name, --mail and --time). Snakemake will automatically queue jobs with the necesarry ressources so you do not need to change ressources specified in `slurm_submit.sbatch`.
 
+## Outputs
+NOTE: `{id}` refers to the percentage identity which reads should be similar in order to be clustered into an OTU. Defaults = [97%, 99%]. Outputs can be annotated with either a blastn or SINTAX formatted database or both.
+* `OTUtable_tax_{id}_sintax.tsv`: Matrix containing number of reads per sample per OTU. Taxonomy of each OTU is annotated by a SINTAX formatted [database](#databases). The OTU table is formatted to be ready for data analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html).
+* `phyloseq_tax_{id}_sintax.tsv`: Matrix containing taxonomy for each OTU annotated by a SINTAX formatted [database](#databases).
+* `phyloseq_abundance_{id}_sintax.tsv`: Matrix containing OTU abundance information for each sample.
+* `OTUtable_tax_{id}_blast.tsv`: Matrix containing number of reads per sample per OTU. Taxonomy of each OTU is annotated by a blastn formatted [database](#databases). The OTU table is formatted to be ready for data analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html). NOTE: Blastn results can give a lot of edge-cases in relation to the formatting of output taxonomy. Be sure to double check annotated taxonomy when using this approach. 
+* `phyloseq_tax_{id}_blast.tsv`: Matrix containing taxonomy for each OTU annotated by a blast formatted [database](#databases).
+* `phyloseq_abundance_{id}_blast.tsv`: Matrix containing OTU abundance information for each sample.
+* `total_reads.tsv`: Number of reads in each sample pre- and post-filtering.
 ## Usage of stats script
 The stats script can be used to visualize read characteristics of the amplicon-sequencing data produced by ONT. The script works on both compressed and decompressed `.fastq` files. The files can be located in the same directory or individual sub-directores. However, if the files are located in the same directory, files originating from the same barcode have to be merged before running the script. 
 Input directory structure examples:
@@ -162,8 +198,7 @@ For more information regarding blastn databases look [here](https://www.ncbi.nlm
 
 # TODO
 * Add release version
-* Replace `<owner>` and `<repo>` with the correct values in this `README.md` as well as in files under `.github/workflows/`.
-* Replace `<snakemake_template>` with the workflow/project name (can be the same as `<repo>`) here as well as in the `environment.yml` and `slurm_submit.sbatch` files.
-* The workflow will occur in the public Snakemake workflow catalog once the repository has been made public and the provided GitHub actions finish correctly. Then the link under "Usage" will point to the usage instructions if `<owner>` and `<repo>` were correctly set. If you don't want to publish the workflow just delete the `.github/workflows/` and `.template/` folders and `snakemake-workflow-catalog.yml`.
-* Consider the license - [Choose a license](https://choosealicense.com/)
-* DELETE this **TODO** section when finished with all of the above, and then start developing your workflow!
+* Add description of final outputs
+* Flesh out readme with database choice
+* Add split_taxonomy.py script to better handle edge case annotation from blast
+* Add .test to pass linting test
