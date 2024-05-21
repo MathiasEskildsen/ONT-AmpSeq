@@ -7,7 +7,7 @@
 This is a snakemake workflow, designed to generate OTU-tables from demultiplexed ONT amplicon data. The final outputs are designed to be compatible with R-packages [ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and [phyloSeq](https://github.com/joey711/phyloseq) to visualize the microbial composition of the analyzed samples.
 The workflow expects the input files to be demultiplexed and basecalled prior to running the workflow. 
 The workflow filters based on user-input in the config file `config/config.yaml` where it is possible to change filters in regards to amplicon length and quality, using [chopper](https://github.com/wdecoster/chopper). The read characteristics for each sample can be assesed using the shell-script script located at `scripts/nanoplot.sh`. More information regarding usage of the script can be found [here](#usage-of-stats-script).
-Biologically meaningful reads from each sample/barcode are clustered into OTU's using [Vsearch](https://github.com/torognes/vsearch) and denoising using [UNOISE3](https://doi.org/10.1093/bioinformatics/btv401) algorithm.
+Biologically meaningful reads from each sample/barcode are clustered into OTU's using [Vsearch](https://github.com/torognes/vsearch) and denoised using [UNOISE3](https://doi.org/10.1093/bioinformatics/btv401) algorithm.
 OTU's from every sample/barcode are merged and polished using [Racon](https://github.com/isovic/racon).
 Taxonomy is infered to the OTU's by either [Vsearch](https://github.com/torognes/vsearch) using a curated SINTAX database (more information on databases [here](#databases)) or [blastn](https://blast.ncbi.nlm.nih.gov/doc/blast-help/) against a blastn formatted database.
 
