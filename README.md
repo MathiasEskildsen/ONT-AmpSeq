@@ -108,7 +108,7 @@ snakemake --cores all --use-conda
 ```
 Given that you have chosen your project working-directory as previously stated. Snakemake will automatically detect the main `Snakefile` in the `workflow` subfolder and execute the workflow module that has been defined by the deployment in step 2.
 
-For further options, fx. for cluster and cloud execution, see [the docs](https://snakemake.readthedocs.io/en/stable/). If you are an AAU user, see [this](#usage-of-workflow-through-slurm-aau-biocloud-users) section.
+For further options, fx. for cluster and cloud execution, see [the docs](https://snakemake.readthedocs.io/en/stable/). If you are an AAU user, see [this](#usage-of-workflow-aau-biocloud-hpc-users) section.
 ### Step 5: Generate report
 After finalizing your data analysis, you can automatically generate an interactive visual HTML report for inspection of results together with parameters and code inside of the browser using:
 ```
