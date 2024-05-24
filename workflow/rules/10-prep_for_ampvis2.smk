@@ -1,5 +1,6 @@
 configfile: "config/config.yaml"
 
+include: "common.smk"
 rule prep_for_ampvis2_sintax:
     input:
         input_all = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv")
@@ -59,18 +60,19 @@ rule prep_for_ampvis2_sintax:
             for row in reader:
                 modified_row = extract_and_map_values(row)
                 writer.writerow(modified_row)
-
 rule ampvis2_modifications_sintax:
     input:
         os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
     output:
         final = os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_sintax.tsv'), # <- this is the output file ready for ampvis2
-        tmp = os.path.join(config['tmp_dir'], "{id}", 'OTUtable_tax_{id}_sintax_temp.tsv')
+        tmp = temp(os.path.join(config['tmp_dir'], "{id}", 'OTUtable_tax_{id}_sintax_temp.tsv'))
     threads:
         1
     resources:
         mem_mb = 1024,
         runtime = "01:00:00"
+    conda:
+        "../envs/generic.yml"
     log:
         os.path.join(config['log_dir'], "taxonomy_sintax", 'ampvis2_modifications_{id}.log')
     shell:
@@ -109,11 +111,4 @@ rule merge_abund_tax_blast:
     log:
         os.path.join(config['log_dir'], "taxonomy_blast", 'merge_abund_tax_blast_{id}.log')
     run:
-        import pandas as pd
-
-        tax = pd.read_csv(input["tax"], sep='\t', header=None, names=['OTU', 'Taxonomy'])
-        abund = pd.read_csv(input["abund"], sep='\t')
-        abund.rename(columns={'#OTU ID': 'OTU'}, inplace=True)
-
-        merged_data = pd.merge(abund, tax, on='OTU', how='right')
-        merged_data.to_csv(output[0], sep='\t', index=False)
+        merge_abund_tax_blast(input["tax"], input["abund"], output[0])

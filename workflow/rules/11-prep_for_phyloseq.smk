@@ -1,3 +1,4 @@
+include: "common.smk"
 rule phyloseq_abund_sintax:
     input:
         os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv")
@@ -12,9 +13,10 @@ rule phyloseq_abund_sintax:
         runtime = "01:00:00"
     shell:
         """
-        cp {input} {output.phyloseq_abundance}
-        sed -i '1 s/#OTU ID/OTU/' {output.phyloseq_abundance}
+        cp {input} {output}
+        sed -i '1 s/#OTU ID/OTU/' {output}
         """
+
 rule phyloseq_tax_sintax:
     input:
         input_OTU = os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_sintax.tsv')
@@ -74,8 +76,11 @@ rule individual_outputs_blast:
     resources:
         mem_mb = 1024,
         runtime = "01:00:00"
+    conda:
+        "../envs/generic.yml"
     shell:
         """
-        cp {input.tax} > {output.tax}
-        cp {input.abund} > {output.abund}
+        cp {input.tax} {output.tax}
+        cp {input.abund} {output.abund}
+        sed -i '1 s/#OTU ID/OTU/' {output.abund}
         """

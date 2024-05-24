@@ -23,7 +23,7 @@ rule relabel:
 
 rule relabel_merge:
     input:
-        expand(os.path.join(config['output_dir'], "polish", "samples_relabeled", "{sample}_relabeled.fasta"), sample=sample_dirs)
+        expand(os.path.join(config['output_dir'], "polish", "samples_relabeled", "{sample}_relabeled.fasta"), sample=get_samples())
     output:
         os.path.join(config['output_dir'], "polish", "samples_relabeled", "merged_polished_relabeled.fasta")
     threads:

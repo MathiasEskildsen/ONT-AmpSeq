@@ -37,8 +37,8 @@ rule filter_fastq:
 
 rule merge_read_count:
     input:
-        pre = expand(os.path.join(config['tmp_dir'], "read_count", "{sample}", "{sample}_total_reads_pre_filtering.tsv"), sample=sample_dirs),
-        post = expand(os.path.join(config['tmp_dir'], "read_count", "{sample}","{sample}_total_reads_post_filtering.tsv"), sample=sample_dirs)
+        pre = expand(os.path.join(config['tmp_dir'], "read_count", "{sample}", "{sample}_total_reads_pre_filtering.tsv"), sample=get_samples()),
+        post = expand(os.path.join(config['tmp_dir'], "read_count", "{sample}","{sample}_total_reads_post_filtering.tsv"), sample=get_samples())
     output:
         os.path.join(config['output_dir'], "final", "report", "total_reads.tsv")
     threads:
