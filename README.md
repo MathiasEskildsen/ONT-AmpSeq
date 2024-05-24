@@ -4,16 +4,10 @@
 [![GitHub actions status](https://github.com/MathiasEskildsen/ONT-AmpSeq/workflows/Tests/badge.svg?branch=main)](https://github.com/MathiasEskildsen/ONT-AmpSeq/actions?query=branch%3Amain+workflow%3ATests)
 
 ## Description
-This is a snakemake workflow, designed to generate OTU-tables from demultiplexed ONT amplicon data. The final outputs are designed to be compatible with R-packages [ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and [phyloSeq](https://github.com/joey711/phyloseq) to visualize the microbial composition of the analyzed samples.
-The workflow expects the input files to be demultiplexed and basecalled prior to running the workflow. 
-The workflow filters based on user-input in the config file `config/config.yaml` where it is possible to change filters in regards to amplicon length and quality, using [chopper](https://github.com/wdecoster/chopper). The read characteristics for each sample can be assesed using the shell-script script located at `scripts/nanoplot.sh`. More information regarding usage of the script can be found [here](#usage-of-stats-script).
-Biologically meaningful reads from each sample/barcode are clustered into OTU's using [Vsearch](https://github.com/torognes/vsearch) and denoised using [UNOISE3](https://doi.org/10.1093/bioinformatics/btv401) algorithm.
-OTU's from every sample/barcode are merged and polished using [Racon](https://github.com/isovic/racon).
-Taxonomy is infered to the OTU's by either [Vsearch](https://github.com/torognes/vsearch) using a curated SINTAX database (more information on databases [here](#databases)) or [blastn](https://blast.ncbi.nlm.nih.gov/doc/blast-help/) against a blastn formatted database.
-
+ONT-AmpSeq is a snakemake workflow, designed to generate OTU-tables from demultiplexed amplicon data. Developed using the following [snakemake template](https://github.com/cmc-aau/snakemake_project_template). The final product of the pipeline is OTU tables formatted to be directly compatiable with the R-packages [ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and [phyloSeq](https://github.com/joey711/phyloseq), enabling further analysis and visualisation of the microbial composition of the processed samples. ONT-AmpSeq expects the input files to be demultiplexed and basecalled prior to running the workflow, using programs such as [dorado](https://github.com/nanoporetech/dorado). The workflow filters data based on user-defined thresholds, which are set in the configuration file `config/config.yaml`, which allows for changes to filter thresholds related to amplicon length and quality, using [chopper](https://github.com/wdecoster/chopper). The amplicon thresholds for each dataset can be assessed using the bash [statistics script](#usage-of-stats-script) located at `~/ONT-AmpSeq/workflow/scripts/nanoplot.sh`. An user guide for preliminary visualisation and analysis to estimate the user-defined thresholds can be found [here](#usage-of-stats-script).
+Then ONT-AmpSeq pipeline creates biologically meaningful consensus OTU's from each sample, by initially clustering the reads into OTU's using [Vsearch](https://github.com/torognes/vsearch) and denoised using the [UNOISE3](https://doi.org/10.1093/bioinformatics/btv401) algorithm. OTU's from every sample are then merged and polished using [Racon](https://github.com/isovic/racon) to minimise sequence errors. Taxonomy is annotated to the OTU's using either the [SINTAX](https://drive5.com/usearch/manual/sintax_algo.html) algorithm or the [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) algorithm (more information on taxonomy and databases can be found [here](#databases)).
 NOTE:
-This is a workflow still being actively developed.
-The workflow was constructed using the following [snakemake template](https://github.com/cmc-aau/snakemake_project_template).
+This workflow is actively improved and supported, with new features continuously being implemented.
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -22,14 +16,17 @@ The workflow was constructed using the following [snakemake template](https://gi
 - [Outputs](#outputs)
 - [Stats script](#usage-of-stats-script)
 - [Database Choice](#databases)
+
 ## Requirements
-Requires a Linux OS or WSL 
+### Hardware requirements
+As a general recommendation for running ONT-AmpSeq whilst producing every possible output, at least 32 threads and 40 GB of memory are advised. THese high requirements stem from the multithreading capabilities of the various software and tools used in the pipeline, as well as the need/possibility to handle very large datasets/databases. While the pipeline has been successfully run with 1 thread and as little as 4 GB of memory using smaller datasets `~/ONT-AmpSeq/.test/test_data` and the MiDAS v5.3 [SINTAX database](https://www.midasfieldguide.org/guide/downloads), using large datasets may cause minimap2 to run out of memory. Additionally, in order to load the general BLAST-formatted [GenBank database](https://www.ncbi.nlm.nih.gov/genbank/) requires ~40 GB of memory, see [BLAST database formatting](#databases).
 
-This workflow requires conda or mamba to install the required tools for the pipeline. Snakemake will automatically install the correct version of the tools required for the pipeline. However, for the first time use you need to install conda or mamba and create an environment containing snakemake and snakedeploy.
+### Software requirements
+To run ONT-AmpSeq, Linux OS or WSL is required. Installation of software/tools utilized in the workflow is based on and requires conda. Using snakemake, the correct versions of the tools will automatically be installed to ensure version compatibility. However, prior to installing ONT-AmpSeq, conda and the subsequent conda environment are required to facilitate the installation of the various utilised tools for both the snakemake and SnakeDeploy installations. For more details, see [SnakeDeploy installation](#usage-of-workflow-snakedeploy).
 
-Conda can be installed by following this [guide](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) and Mamba can be installed by following this [guide]().
-It is recommended to follow the original documentation, however below is the commands used to freshly install the software on a Linux machine as per their documentation (14-05-2024).
-Miniconda:
+Conda can be installed by following this [guide](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) or Mamba can be installed by following this [guide](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
+It is recommended to follow the original documentation. However, below are the commands used to freshly install the software on a Linux machine as per their documentation (14-05-2024).
+Latest version of Miniconda:
 ```
 mkdir -p ~/miniconda3
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
@@ -47,59 +44,57 @@ conda config --add channels conda-forge
 conda config --add channels bioconda
 ```
 
-Now your conda install is set-up and you're ready to set-up your environment.
+Now your conda install is correctly configured and you're ready to create your conda environment for snakemake.
 
-## Usage of workflow (Snakedeploy)
+## Usage of ONT-AmpSeq using SnakeDeploy
 The usage of this workflow is also described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=MathiasEskildsen/ONT-AmpSeq).
-## Usage with snakedeploy
-### Step 1: Install Snakemake and Snakedeploy
-Snakemake and Snakedeploy are best installed via the [Mamba package manager](https://github.com/mamba-org/mamba) (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). For other options see [here](https://github.com/mamba-org/mamba). Or refer to the Miniconda installation and quick set-up in [Requirements](#requirements).
-
-Given that Mamba (If Miniconda is installed, the mamba can be changed for conda) is installed, set-up your enviroment by running:
-`mamba create -c conda-forge -c bioconda --name snakemake snakemake=7.18.2 snakedeploy`
-This installs both Snakemake and Snakedeploy in their own isolated environment. For all the following commands ensure that this environment is activated with the following command:
-`mamba activate snakemake`
+### Step 1: Install Snakemake and SnakeDeploy
+Compatible versions of snakemake and SnakeDeploy for this guide are installed via the [Mamba package manager](https://github.com/mamba-org/mamba) (a package manager alternative for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge) or refer to the Miniconda installation and setup in [Requirements](#software-requirements).
+Given that Mamba (If Miniconda is installed, then mamba can be changed for conda) is installed, a compatible conda environment for snakemake and SnakeDeploy can be created by running:
+```
+mamba create -c conda-forge -c bioconda --name snakemake snakemake=7.18.2 snakedeploy
+```
+This installs both snakemake and SnakeDeploy in the same environment called `snakemake`. For running ONT-AmpSeq using the SnakeDeploy method, this environment is required to be activated via `mamba activate snakemake`, prior to running any of the following commands for the workflow.
 ### Step 2: Deploy workflow
-Given that Snakemake and Snakedeploy are installed and activated (see step 1), the workflow can be deployed as follows:
-First, create an appropriate project working directory on your system and choose it:
+Given that Snakemake and Snakedeploy are installed and activated in [step 1](#step-1-install-snakemake-and-snakedeploy), the workflow can now be deployed through the following steps.
+First: Create an appropriate project working directory on your system and change your location to said directory:
 ```
-mkdir -p path/to/project-workdir
-cd path/to/project-workdir
+mkdir -p path/to/ONT-AmpSeq
+cd path/to/ONT-AmpSeq
 ```
-In the following steps, we will assume that you have chosen and are inside of that directory.
-Second, run:
+In the following steps, it is assumed that you have set your working directory to `path/to/ONT-AmpSeq`.
+Second: Run the SnakeDeploy command for ONT-AmpSeq:
 ```
 snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --branch main
 ```
 
-Snakedeploy will create two folders `workflow` and `config`. The former contains the deployment of the chosen workflow as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows), the latter contains configuration files which will be modified in the next step in order to configure the workflow to your needs. Later, when executing the workflow, Snakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
+SnakeDeploy will then create two folders `workflow` and `config`. The `workflow` folder contains the deployment of the chosen workflow (ONT-AmpSeq) in the form of a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows). The `config` folder contains configuration files, which can be modified using the next step, in order to configure the workflow, depending on the user-defined criteria and individual analysed datasets. Later, when executing the workflow, Snakemake will automatically find the main `Snakefile` in the `workflow` subfolder. 
 
-Third, consider to put this directory under version control, e.g. by managing it [via a (private) Github repository](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
+Third (optional): Consider to put this directory under version control, e.g. by managing it [via a (private) Github repository](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github)
 
 ### Step 3: Configure the workflow
-The workflow needs to be configured according to your directory structure and according to your needs. Below is an explaination of the settings that can be configured. These can be changed directly in the config file located at `path/to/project-workdir/config/config.yaml` or changed by command line arguments, explained later.
-* `input_dir`: Path to the input folder, containing fastq files in compressed or decompressed format. The pipeline expects the input files to conform to 1 of 2 directory structures, see [here](#usage-of-stats-script) for more information of directory structures.
-* `output_dir`: Path to output directory with the final results of the pipeline and a few intermediary files, thay might prove useful for other purposes.
-* `tmp_dir`: Directory for temporary files, temporary files will be removed after a succesful run.
-* `log_dir`: Directory for log files for all invoked rules.
-* `db_path_sintax`: Database to infer taxonomy using the SINTAX algorithm. Should contain SequenceID, taxonomy string and a fasta sequence. More information at [databases](#databases).
-* `db_path_blast`: Nucleotide blast formatted database to infer taxonomy using BLASTn algorithm. More information at [databases](#databases).
-* `evalue`: E-value cutoff for blast. Default = 1e-10.
-* `length_lower_limit`: Default = 1200. Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh.
-* `length_upper_limit`: Default = 1600. Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh.
-* `quality_cut_off`: Default = 23. Argument passed on to `chopper` for filtering reads. Appropriate value depends on the quality of your sequencing data. This can be checked by running the helper [stats script](#usage-of-stats-script) scripts/nanoplot.sh. It is recommended to pick a Q-score >20, if your data permits it. 
+The workflow needs to be configured according to the individual dataset content and requirements. Below is a thorough explaination of the settings that can be configured. These can either be changed directly in the config file located at `path/to/ONT-AmpSeq/config/config.yaml` or changed by command line arguments:
+* `input_dir`: Path to the input folder, containing fastq files in compressed `file.fastq.gz` or decompressed `file.fastq` format. The pipeline expects the input files to conform to one of two directory structures, see [here](#usage-of-stats-script) for more information on directory structures.
+* `output_dir`: Name and path to the output directory with the final OTU tables created by ONT-AmpSeq and a few important intermediary files, which may prove useful for other purposes.
+* `tmp_dir`: A required directory for temporary files. Temporary files will be removed after a succesful run.
+* `log_dir`: Directory for log files for all invoked rules, which may prove useful for debugging.
+* `db_path_sintax`: Path to a [SINTAX formatted database](https://drive5.com/usearch/manual/sintax_algo.html), used to annotate consensus OTU's. For more information regarding SINTAX formatted databases, algorithm and how to find/create then, see [databases](#sintax-database).
+* `db_path_blast`: Path to a nucleotide formatted [BLAST database](https://blast.ncbi.nlm.nih.gov/Blast.cgi). For more information regarding BLAST formatted databases, algorithm and how to find/create them, see [databases](#blast-database).
+* `evalue`: E-value cutoff for blast. Defaultvalue = 1e-10. See [databases](#blast-database).
+* `length_lower_limit`: Lower threshold length for filtering of amplicons. Default = 1200 bp. The amplicon filtering length should be changed, depending on the individual amplicon length for the given dataset. See [stats script](#usage-of-stats-script) for a guide to setting an appropriate length treshold using the script `ONT-AmpSeq/workflow/scripts/nanoplot.sh`.
+* `length_upper_limit`: Upper threshold length for filtering of amplicons. Default = 1600 bp. The amplicon filtering length should be changed, depending on the individual amplicon length for the given dataset. See [stats script](#usage-of-stats-script) for a guide to setting an appropriate length treshold using the script `ONT-AmpSeq/workflow/scripts/nanoplot.sh`.
+* `quality_cut_off`: Phred-quality score threshold (Q-score). Default = 23. To select an appropriate Q-score for a dataset, see [stats script](#usage-of-stats-script) for a more detailed guide for choosing appropriate Q-score and the effects hereof.
 * `max_threads`: Maximum number of threads that can be used for any given rule.
-* `include_blast_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
-* `include_sintax_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.
+* `include_blast_output`: Default = true. If true, ONT-AmpSeq will annotate the final OTU-table using the [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) algorithm and a BlASTn formatted database.
+* `include_sintax_output`: Default = true. If true, ONT-AmpSeq will annotate the final OTU-table using the SINTAX algorithm and a [SINTAX formatted database](https://drive5.com/usearch/manual/sintax_algo.html).
 
-As previously mentioned, the workflow configurations can also be changed directly in the command line. Every configuration can be changed, keep in mind, that configurations without specified changes in the command line will use the value specified in the configuration file (`path/to/project-workdir/config/config.yaml`).
-Example of changing a few configurations from their default:
+The workflow configurations can also be changed directly via the command line. When specifying the configuration parameters through the command line, default values will be used unless otherwise specified, as written in `path/to/ONT-AmpSeq/config/config.yaml`. To specify changed values for the config through the command line, use the following structure:
 ```
-cd path/to/project-workdir
+cd path/to/ONT-AmpSeq
 mamba activate snakemake
 snakemake --cores all --use-conda --config include_blast_output=False db_path_sintax=/path/to/SINTAX_DATABASE.fa length_lower_limit=400 length_upper_limit=800 quality_cut_off=20
 ```
-The code snippet above will; choose your project working directory, enabling snakemake to locate the snakefile and configuration file. Activate your environment containing snakemake, as described in [step1](#step-1-install-snakemake-and-snakedeploy). Finally, it will run the snakemake workflow, filtering out reads shorter than 400bp, longer than 800bp and with a Q-score <20. It will output OTU-tables with taxonomy annotated by a sintax database. 
+The code snippet above will change your working directory to the project dir, enabling snakemake to locate the snakefile and configuration file. Activate your conda environment containing snakemake, as described in [step 1](#step-1-install-snakemake-and-snakedeploy). Finally, it will run the snakemake workflow, filtering out reads shorter than 400bp, longer than 800bp and with a Q-score <20. It will output OTU-tables with taxonomy annotated by a sintax database. 
 ### Step 4: Run the workflow
 Given that the workflow has been properly deployed and configured, it can be executed as follows.
 For running the workflow while deploying any necessary software via conda using the [Mamba package manager](https://github.com/mamba-org/mamba), run Snakemake with:
@@ -195,6 +190,10 @@ The command will create a directory under your chosen directory (or to a full pa
 MiDAS SINTAX database can be downloaded [here](https://www.midasfieldguide.org/guide/downloads)
 
 For more information regarding blastn databases look [here](https://www.ncbi.nlm.nih.gov/books/NBK279684/table/appendices.T.makeblastdb_application_opt/)
+
+### SINTAX database
+
+### BLAST database
 
 # TODO
 * Add release version
