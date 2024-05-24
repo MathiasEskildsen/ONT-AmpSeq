@@ -3,7 +3,7 @@ import os
 
 rule concatenate_otus:
     input:
-        expand(os.path.join(config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta"),sample=sample_dirs) # Use aggregate rule to concatenate all files using wildcard.sample
+        expand(os.path.join(config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta"),sample=get_samples()) # Use aggregate rule to concatenate all files using wildcard.sample
     output:
         os.path.join(config["output_dir"], "vsearch", "samples", "concatenated_otus.fasta")
     conda:

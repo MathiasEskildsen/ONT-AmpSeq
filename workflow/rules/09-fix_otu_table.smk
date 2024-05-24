@@ -11,6 +11,8 @@ rule fix_otu_table_sintax:
     resources:
         mem_mb = 1024,
         runtime = "01:00:00"
+    conda:
+        "../envs/generic.yml"
     log:
         os.path.join(config["log_dir"], "fix_otu_table_sintax", "otu_table_all_{id}.log")
     shell:
@@ -22,17 +24,21 @@ rule prep_input_blast:
     input:
         os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast_uniq.txt")
     output:
-        os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt")
+        trimmed =   os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt"),
+        tmp =   temp(os.path.join(config["tmp_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt"))
     threads:
         1
     resources:
         mem_mb = 1024,
         runtime = "01:00:00"
+    conda:
+        "../envs/generic.yml"
     log:
         os.path.join(config["log_dir"], "prep_input_blast", "otu_taxonomy_{id}_blast.log")
     shell:
         """
         #trim the blast output to only include the OTU and the taxonomy
-        awk -F'\t' '{{print $1 "\t" $2}}' {input} > {output}
-        sed -i 's/;size=[0-9]\\+\t/\t/' {output}
+        awk -F'\t' '{{print $1 "\t" $2}}' {input} > {output.tmp}
+        sed -i 's/;size=[0-9]\\+\t/\t/' {output.tmp}
+        awk '!seen[$1]++' {output.tmp} > {output.trimmed}
         """
