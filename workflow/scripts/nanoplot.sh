@@ -18,13 +18,14 @@ usage: $(basename "$0" .sh) [-h] [-o path] [-i path] [-t value] [-j value]
 
 where:
     -h Show this help message.
-    -o Path where directories should be created and files should be stored
-    -i Full path to .fastq files, example: /Full/Path/to/nanopore_data/ONT_RUN_ID/fastq_pass  
+    -o Output directory path for the processed files. The script automatically creates a directory based on the specified user-defined output name.
+    -i Full path to the input files. If using the default fastq folders created by MinKNOW, a example path could be: /Full/Path/to/nanopore_data/ONT_RUN_ID/fastq_pass.  
     -j Number of parallel jobs [default = 1]
     -t Number of threads [default = 1]
     Important note:
     Remember to activate your conda environment, containing nanoplot version 1.42.0, before running the script.
     If installed through stats.yml, activate the environment with mamba activate stats.
+    The total number of threads used by the script is number of parallel jobs x number of threads, e.g. -j 2 -t 10 will use 20 threads.
 "
 # Process command-line options
 while getopts 'o:i:t:j:h' OPTION; do

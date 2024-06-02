@@ -20,10 +20,10 @@ conda activate snakemake
 # requires nothing, 1CPU + 1G mem is enough
 
 # Render a DAG to visualize the workflow (optional)
-snakemake --dag | dot -Tpdf > results/dag.pdf
+snakemake --dag | dot -Tpdf > dag.pdf
 
 # Main workflow
 snakemake --profile profiles/biocloud
 
 # Generate a report once finished (optional)
-snakemake --report results/report.html
+snakemake --report results/final/report/report.html
