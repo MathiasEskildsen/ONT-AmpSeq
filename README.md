@@ -11,9 +11,9 @@ This workflow is actively maintained and supported, with new features continuous
 
 ## Table of Contents
 - [Requirements](#requirements)
-- [Usage of Workflow with Snakedeploy](#usage-of-workflow-snakedeploy)
-- [Uage of Workflow AAU Biocloud Users](#usage-of-workflow-aau-biocloud-hpc-users)
-- [Outputs](#outputs)
+- [Usage of Workflow with Snakedeploy](#usage-of-ont-ampseq-using-snakedeploy)
+- [Usage of Workflow Local Repository Installation (AAU HPC users)](#usage-of-workflow-local-repository-installation-aau-biocloud-hpc-users)
+- [Inputs & Outputs](#inputs--outputs)
 - [Stats script](#stats-script-nanoplotsh)
 - [Database Choice](#databases)
 
@@ -119,7 +119,7 @@ The resulting `report.html` file can be shared with collaborators, provided as a
 
 The usage of this workflow is also described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=MathiasEskildsen/ONT-AmpSeq).
 
-## Usage of workflow (AAU BioCloud HPC users)
+## Usage of workflow local repository installation (AAU BioCloud HPC users)
 AAU BioCloud HPC users can also use the snakedeploy [step-by-step](#usage-with-snakedeploy). However, it is recommended to follow the guide below as it will install and unpack the pipeline for the individual user and also include scripts to assist in submitting jhobs via [SLURM](https://slurm.schedmd.com/documentation.html). For further guidance on Snakemake and BioCloud HPC usage, refer to the [BioCloud HPC user guide](https://cmc-aau.github.io/biocloud-docs/guides/snakemake/intro/).
 
 ```
@@ -132,17 +132,18 @@ cd /path/to/home-dir/ONT-AmpSeq-main
 mamba env create -f environment.yml
 ```
 Configure the `config/config.yaml` as described [previously](#step-3-configure-the-workflow). Then simply run `snakemake --profile profiles/biocloud` or submit a SLURM job using the `slurm_submit.sbatch` example script. If running the pipeline through `slurm_submit.sbatch`, remember to change the `#SBATCH` arguments at the top of the script, to fit your run (--job-name, --mail and --time). Snakemake will automatically queue jobs with the necesarry ressources, so you do not need to change ressources (--mem and --cpus-per-task) specified in `slurm_submit.sbatch`.
-
-## Outputs
-NOTE: `{id}` refers to the percentage identity which reads should be similar in order to be clustered into an OTU. Defaults = [97%, 99%]. `{tax}` refers to the annotation method for the final output. The values are either BLAST or SINTAX.
-* `ONT-AmpSeq-main/results/final/{id}/OTUtable_tax_{id}_{tax}.tsv`: This matrix contains the number of reads per sample per OTU. The taxonomy of each OTU is annotated by using either the [SINTAX](#sintax-database) or [BLAST](#blast-database) algorithm. The OTU tables are formatted to be ready for data analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html).
-NOTE: BLAST results in a high degree of “edge-cases” due to the formatting of output taxonomy. Which has no restrictions on the database header format. Be sure to manually inspect and double-check the annotated taxonomy when using this approach, as it can result in problems with the [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) R-package. See [BLAST] (#databases) for more information regarding the BLASTn formatted database.
-* `ONT-AmpSeq-main/results/final/{id}/phyloseq_tax_{id}_{tax}.tsv`: This matrix contains taxonomy for each OTU annotated by using either the [SINTAX algorithm](#sintax-database) or [BLAST algorithm](#blast-database). This taxonomy table is preformatted to be directly compatible with the `tax_table` variable for creating and analysing a [phyloseq object]( https://joey711.github.io/phyloseq/).
-* `ONT-AmpSeq-main/results/final/{id}/phyloseq_abundance_{id}_{tax}.tsv`: This matrix contains number of reads per sample per OTU. This OTU table is preformatted to be directly compatible with the otu_table for creating and analysing a [phyloseq object]( https://joey711.github.io/phyloseq/).
-* `ONT-AmpSeq-main/results/final/report/total_reads.tsv`: This file provides an overview of the number of reads in each sample pre- and post-filtering.
-## Stats script (nanoplot.sh)
-The stats script, `nanoplot.sh`, is a bash-script used to visualise read characteristics of the amplicon-sequencing data produced by ONT. The script works on both compressed and decompressed `*.fastq` files. The files can be located in the same directory or individual sub-directores. However, if the files are located in the same directory, files originating from the same barcode must be merged prior to executing the script. 
-Examples of accepted input directory structures for the script and the `ONT-AmpSeq` workflow:
+## Inputs & Outputs
+### Input format
+ONT-AmpSeq is able to process both compressed and decompressed `.fastq` files. The accepted structures are listed below. It also accepts a combination of the two structures (although this is not recommended).
+Directory structure 1: Merged `.fastq` files (Genral output from [Dorado](https://github.com/nanoporetech/dorado)). Since ONT-AmpSeq accepts all `.fastq` files, the input data is not restricted to the ONT platform and can include any amplicon data, regardless of the sequencing platform used.
+```
+path/to/home-dir/ONT-AmpSeq-main/data
+└── samples
+    ├── PAQ88430_pass_barcode01_807aee6b.fastq
+    ├── PAQ88430_pass_barcode02_807aee6b.fastq
+    └── PAQ88430_pass_barcode03_807aee6b.fastq
+```
+Directory structure 2: General output from [Guppy](https://community.nanoporetech.com/docs/prepare/library_prep_protocols/Guppy-protocol/v/gpb_2003_v1_revax_14dec2018/guppy-software-overview)
 ```
 path/to/home-dir/ONT-AmpSeq-main/data
 └── samples
@@ -159,13 +160,15 @@ path/to/home-dir/ONT-AmpSeq-main/data
         ├── PAQ88430_pass_barcode03_807aee6b_5f7fc5bf_1.fastq
         └── PAQ88430_pass_barcode03_807aee6b_5f7fc5bf_2.fastq
 ```
-```
-path/to/home-dir/ONT-AmpSeq-main/data
-└── samples
-    ├── PAQ88430_pass_barcode01_807aee6b.fastq
-    ├── PAQ88430_pass_barcode02_807aee6b.fastq
-    └── PAQ88430_pass_barcode03_807aee6b.fastq
-```
+### Output files
+NOTE: `{id}` refers to the percentage identity which reads should be similar in order to be clustered into an OTU. Defaults = [97%, 99%]. `{tax}` refers to the annotation method for the final output. The values are either BLAST or SINTAX.
+* `ONT-AmpSeq-main/results/final/{id}/OTUtable_tax_{id}_{tax}.tsv`: This matrix contains the number of reads per sample per OTU. The taxonomy of each OTU is annotated by using either the [SINTAX](#sintax-database) or [BLAST](#blast-database) algorithm. The OTU tables are formatted to be ready for data analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html).
+NOTE: BLAST results in a high degree of “edge-cases” due to the formatting of output taxonomy. Which has no restrictions on the database header format. Be sure to manually inspect and double-check the annotated taxonomy when using this approach, as it can result in problems with the [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) R-package. See [BLAST] (#databases) for more information regarding the BLASTn formatted database.
+* `ONT-AmpSeq-main/results/final/{id}/phyloseq_tax_{id}_{tax}.tsv`: This matrix contains taxonomy for each OTU annotated by using either the [SINTAX algorithm](#sintax-database) or [BLAST algorithm](#blast-database). This taxonomy table is preformatted to be directly compatible with the `tax_table` variable for creating and analysing a [phyloseq object]( https://joey711.github.io/phyloseq/).
+* `ONT-AmpSeq-main/results/final/{id}/phyloseq_abundance_{id}_{tax}.tsv`: This matrix contains number of reads per sample per OTU. This OTU table is preformatted to be directly compatible with the otu_table for creating and analysing a [phyloseq object]( https://joey711.github.io/phyloseq/).
+* `ONT-AmpSeq-main/results/final/report/total_reads.tsv`: This file provides an overview of the number of reads in each sample pre- and post-filtering.
+## Stats script (nanoplot.sh)
+The stats script, `nanoplot.sh`, is a bash-script used to visualise read characteristics of the amplicon-sequencing data produced by ONT. The script works on both compressed and decompressed `*.fastq` files. The input format for the stats script is described [above](#input-format).
 To create a conda environment for the stats script, containing [NanoPlot](https://github.com/wdecoster/NanoPlot) version 1.42.0, you can use the following command:
 
 ```
@@ -197,26 +200,25 @@ bash workflow/scripts/nanoplot.sh -o path/to/out_dir -i path/to/data/samples -t 
 ```
 The `nanoplot.sh` script will then create a directory based on the specified output variable containing three sub-directories: `stats`, `fastqs` and `joblog`. The `stats` sub-directory contains plots for each respective sample, located in individual sub-directories named after their respective fastq file. Within these sub-directories the `LengthVsQualityScatterPlot_dot.png` provides a great overview of the read characteristics for each sample. `fastqs` contains unzipped merged fastq files, which can be used in the main snakemake workflow or be removed. The last directory `joablog`, contains a text file with the command-line output. This can be useful for debugging.
 ### Analysis of stats results
-This section will describe how to determine tresholds for the ONT-AmpSeq configuration, using the stats-script located at `path/to/home-dir/ONT-AmpSeq-main/workflow/scripts/nanoplot.sh` and a tiny dataset located at `path/to/home-dir/ONT-AmpSeq-main/.test/test_data` containing 16S rRNA V1-8 amplicons.
+In this section we provide a guide on how to determine filtering tresholds for the ONT-AmpSeq pipeline. However, it should be noted, that thresholds can vary greatly, depending on the dataset, and should be considered for every dataset. Said threshold can always be changed, depending on user-criteria. The guide has been made by using the stats-script located at `path/to/home-dir/ONT-AmpSeq-main/workflow/scripts/nanoplot.sh` and a tiny dataset located at `path/to/home-dir/ONT-AmpSeq-main/.test/test_data` containing 16S rRNA V1-8 amplicons.
 ```
 cd path/to/home-dir/ONT-AmpSeq-main
 mamba activate stats
 bash workflow/scripts/nanoplot.sh -t 1 -j 1 -o .test/stats_out -i .test/test_data
 ```
-This will generate statistics for each sample, enabling ONT-AmpSeq configuration. An easy way to asses the amplicon length and quality is through the plot `LengthvsQualityScatterPlot_dot.png`
+This visualisation will display the read characteristics for each sample, facilitating the configuration of ONT-AmpSeq. An easy way to assess the amplicon length and quality is through the provided plot `LengthvsQualityScatterPlot_dot.png`.
 <figure id="figref-nanoplot">
   <img src=".test/stats_out/stats/sample1/LengthvsQualityScatterPlot_dot.png">
   <figcaption>
-  <strong>Figure 1:</strong> Example plot of read length vs average quality generated by Nanoplot. This example shows one distinct amplicon for the 16S rRNA V1-8. 
+  <strong>Figure 1:</strong> Dot plot of the test data. Visualising read length on the x-axis and Q-score on the y-axis. This example reveals reads characteristics for one distinct amplicon for the 16S rRNA V1-8. 
   </figcaption>
 </figure>
 
-The generated figure clearly shows reads with the length of ~1500 bp and most of the reads with a Q-score >20. This information can be used to configure the ONT-AmpSeq pipeline.
-
+From this dot plot, the reads are based on V1-8 16S rRNA with a theoretical amplicon length of approximately 1400 bp. It is therefore recommended to filter the reads to around this length, e.g., `length_lower_limit=1200` and `length_upper_limit=1600`, continuing only with reads of the desired length. The Q-score threshold is a bit more tricky and depends on the individual dataset. If the desired output is to examine the diversity of the reads according to certain criteria, it could be recommended to set a Q-score to `quality_cut_off=20` (indicating <1% error rate). If the desired output is simply to validate the best amplicons, a higher Q-score of, e.g., Q-score to `quality_cut_off=25` (>0.3% error rate) could suffice, as a lower read error is more valuable than the amount of data. The Q-score threshold is therefore dependent on the dataset and user requirements.
 ## Databases
 Before running the pipeline, it is important to determine the type of database that is most relevant for the individual dataset and application. Ideally, a manually curated environmentally specific database should be used, as it would yield the best results and require the least amount of processing power. It is always recommend to use a [SINTAX database](https://drive5.com/usearch/manual/sintax_algo.html) over a [BLAST database](https://blast.ncbi.nlm.nih.gov/Blast.cgi) when possible, due to the significantly lower processing time, requirements, more accurate bootstrap-supported taxonomy, and optimised formatting for post-processing via the [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) or [phyloseq]( https://joey711.github.io/phyloseq/) R-packages.
 ### SINTAX database
-A [SINTAX database](https://drive5.com/usearch/manual/sintax_algo.html) essentially consists of a fasta file, where each sequence header includes the complete taxonomy, formatted with the specific delimiters and syntax. This format enables the use of bootstrap supported confidence values for taxonomic annotation, thereby only allowing the supported taxonomic level to be assigned, unlike the [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi algorithm. 
+A [SINTAX database](https://drive5.com/usearch/manual/sintax_algo.html) essentially consists of a fasta file, where each sequence header includes the complete taxonomy, formatted with the specific delimiters and syntax. This format enables the use of bootstrap supported confidence values for taxonomic annotation, thereby only allowing the supported taxonomic level to be assigned, unlike the [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) algorithm. 
 The [SINTAX database](https://drive5.com/usearch/manual/sintax_algo.html) file must be formatted as follows to ensure accurate taxonomy assignment. It is essential to have the `;tax=` following header name and the respective `x: ` before taxonomic annotation of each given rank separated by a comma `,`. If this exact setup is not followed, the final annotation of the OTU tables will not be able to be analysed correctly using the [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) or [phyloseq]( https://joey711.github.io/phyloseq/) R-packages. An example of the general structure is as follows:
 ```
 >unique_name1;tax=d:Kingdom,p:Phylum,c:Class,o:Order,f:Family,g:Genus,s:Species
@@ -226,9 +228,9 @@ Sequence
 ```
 An example of this structure is the [gnomAD database](https://gnomad.broadinstitute.org/), which is an environmentally specific manually-curated database for the human gut. This database has been adapted and reformatted as a full-length 16S rRNA SINTAX database located in `.test/databases/human_gut_rRNA_SSU_FL_sintax.fasta`, which looks like:
 ```
->MGYG000003569;tax=d:Bacteria,p:Spirochaetota,c:Spirochaetia,o:Treponematales,f:Treponemataceae,g:Treponema_D,s:sp900769975;
+>MGYG000003569;tax=d:Bacteria,p:Spirochaetota,c:Spirochaetia,o:Treponematales,f:Treponemataceae,g:Treponema_D,s:sp900769975
 ATGAAGAGTTTGATCCTGGCTCAGGATGAACGCTAGCGGCAGGCTTAACACATGCAAGTCGAGGGGTAACAGGTTAGTAGCAATACTGATGCTGACGACCGGCGCACGGGTGCGTAACGCGTATGCAACCTACCTTATACAGGGGGATAACCTTTCGAAAGGGAGA...
->MGYG000003543;tax=d:Bacteria,p:Bacteroidota,c:Bacteroidia,o:Bacteroidales,f:Bacteroidaceae,g:HGM04593,s:sp900769465;
+>MGYG000003543;tax=d:Bacteria,p:Bacteroidota,c:Bacteroidia,o:Bacteroidales,f:Bacteroidaceae,g:HGM04593,s:sp900769465
 AAGGAGGTGTTCCAGCCGCACCTTCCGGTACGGCTACCTTGTTACGACTTAGCCCCAATCACCAGTTTCACCCTAGGCCGATCCTCGCGGTTACGGACTTCAGGTGCCCCCGGCTTTCATGGCTTGACGGGCGGTGTGTACAAGGCCCGGGAACGTATTCACCGCG...
 ```
 If a specialised database for a given environment or dataset is available, it is highly recommended to reformat the specified fasta sequences to this SINTAX format and use it as a reference database. The SINTAX database is therefore only limited by the quality of the references and whether a given study has been conducted for the desired environment.
@@ -260,8 +262,35 @@ NOTE: To use this command a conda environment containing [BLAST](https://biocond
 NOTE: When using a [BLAST database](https://blast.ncbi.nlm.nih.gov/Blast.cgi), the name of the database must be specified. For example, the [GenBank database](https://www.ncbi.nlm.nih.gov/genbank/) is created from a file "nt". Therefore, to specify the path to the database, `path/to/blast_database/nt` is required, as [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) will not start if given the directory only `path/to/blast_database/`, despite it being correctly formatted and containing the correctly named database.
 If a dataset lacks specific databases for the given environment or amplicon, large preformatted [BLAST databases]( https://www.ncbi.nlm.nih.gov/genbank/) containing nearly every known gene, such as the [NCBI GenBank database](https://www.ncbi.nlm.nih.gov/genbank/), can be downloaded from [here]( https://www.ncbi.nlm.nih.gov/genbank/release/). However, these databases are enormous, containing vast amounts of data. For reference, [NCBI GenBank version 259](https://www.ncbi.nlm.nih.gov/genbank/release/259/) contains 249,060,436 sequences or 2,570,711,588,044 bases and requires 367 GB of disk space to download. Another significant limitation of such vast databases is the high degree of false positives in hits, potentially identifying uncultured bacteria without taxonomy or not necessarily providing the correct hit, but rather the one within the database that yields the lowest e-value.
 
-# ONT-AmpSeq in bash-script format
-ONT-AmpSeq was originally made as a simple bash-script. This can be downloaded from a deprecated reposiory [here](https://github.com/MathiasEskildsen/ONT_OTU_Table). This can be used following the guidelines.
+## ONT-AmpSeq in bash-script format
+ONT-AmpSeq was originally made as a simple bash-script. This can be found at `ONT-AmpSeq-main/scripts/ONT-AmpSeq_bash_version.sh`. It is highly recommended to run the workflow using Snakemake, however if this is not possible the bash-script can be utilized instead.
+### Usage
+The workflow requires the installation of various tools. This can be facili
+```
+USAGE="
+-- ONT-AmpSeq: Workflow for generation of OTU table. Z-clustered OTU consensus polish with Medaka
+usage: $(basename "$0" .sh) [-h] [-i path] [-o path] [-t value] [-j value] [-l value] [-u value] [-q value] [-m string] [-M] [-r string] [-db path]
+
+
+where:
+    -h Show this help message
+    -i Directory path of unzipped raw ".fastq" files, from statistics workflow, /path/to/unzipped/raw/fastq/1_raw
+    -o Path where directories and files should be stored
+    -t Number of threads [default = 10]
+    -j Number of parallel jobs [default = 1]
+    -l Minimum length of reads (Check size distribution from statistics)
+    -u Maximum length of reads (Check size distribution from statistics)
+    -q Minimum q-score of reads (Check quality distribution of reads)
+    -m ONT Device and basecalling model [default = r1041_e82_400bps_sup_v4.2.0]
+    -M List available models for medaka polishing
+    -r Method for taxonomic classification, SINTAX or blastn
+    -d Full path to database for taxonomic classication, examples: /space/databases/midas/MiDAS4.8.1_20210702/output/FLASVs_w_sintax.fa or /space/databases/blast/nt_2022_07_28/nt
+"
+```
+Example command:
+```
+bash ONT-AmpSeq-main/scripts/ONT-AmpSeq_bash_version.sh
+```
 
 # TODO
 * Add release version

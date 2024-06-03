@@ -1,0 +1,12 @@
+name: OTUtable
+channels:
+  - bioconda
+  - anaconda
+dependencies:
+  - nanoplot=1.42.0
+  - chopper=0.7
+  - vsearch=2.26.1
+  - medaka=1.11.1
+  - parallel
+  - blast=2.15.0
+  - pandas=2.1.1
