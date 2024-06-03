@@ -105,8 +105,8 @@ mkdir -p $project_dir/8_OTUtable/97
 mkdir -p $project_dir/8_OTUtable/99
 
 
-#load mamba environment
-mamba activate OTUtable
+#load conda environment
+conda activate OTUtable
 
 #Filter based upon information gained from "Amp-Seq_Statistics" workflow
 input="$input_fastq" ##Input path to folder containing merged .fastq files

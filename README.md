@@ -16,6 +16,7 @@ This workflow is actively maintained and supported, with new features continuous
 - [Inputs & Outputs](#inputs--outputs)
 - [Stats script](#stats-script-nanoplotsh)
 - [Database Choice](#databases)
+- [Bash Script](#ont-ampseq-in-bash-script-format)
 
 ## Requirements
 ### Hardware requirements
@@ -198,7 +199,7 @@ mamba activate stats
 cd path/to/home-dir/ONT-AmpSeq-main
 bash workflow/scripts/nanoplot.sh -o path/to/out_dir -i path/to/data/samples -t 1 -j 1 
 ```
-The `nanoplot.sh` script will then create a directory based on the specified output variable containing three sub-directories: `stats`, `fastqs` and `joblog`. The `stats` sub-directory contains plots for each respective sample, located in individual sub-directories named after their respective fastq file. Within these sub-directories the `LengthVsQualityScatterPlot_dot.png` provides a great overview of the read characteristics for each sample. `fastqs` contains unzipped merged fastq files, which can be used in the main snakemake workflow or be removed. The last directory `joablog`, contains a text file with the command-line output. This can be useful for debugging.
+The `nanoplot.sh` script will then create a directory based on the specified output variable containing three sub-directories: `stats`, `fastqs` and `joblog`. The `stats` sub-directory contains plots for each respective sample, located in individual sub-directories named after their respective fastq file. Within these sub-directories the `LengthVsQualityScatterPlot_dot.png` provides a great overview of the read characteristics for each sample. `fastqs` contains unzipped merged fastq files, which can be used in the main snakemake workflow or be removed. The last directory `joblog`, contains a text file with the command-line output. This can be useful for debugging.
 ### Analysis of stats results
 In this section we provide a guide on how to determine filtering tresholds for the ONT-AmpSeq pipeline. However, it should be noted, that thresholds can vary greatly, depending on the dataset, and should be considered for every dataset. Said threshold can always be changed, depending on user-criteria. The guide has been made by using the stats-script located at `path/to/home-dir/ONT-AmpSeq-main/workflow/scripts/nanoplot.sh` and a tiny dataset located at `path/to/home-dir/ONT-AmpSeq-main/.test/test_data` containing 16S rRNA V1-8 amplicons.
 ```
@@ -264,8 +265,13 @@ If a dataset lacks specific databases for the given environment or amplicon, lar
 
 ## ONT-AmpSeq in bash-script format
 ONT-AmpSeq was originally made as a simple bash-script. This can be found at `ONT-AmpSeq-main/scripts/ONT-AmpSeq_bash_version.sh`. It is highly recommended to run the workflow using Snakemake, however if this is not possible the bash-script can be utilized instead.
+The script requires the installation of various tools. This can be facilitated by installing dependencies through a conda environment:
+```
+cd /path/to/home-dir/ONT-AmpSeq-main
+mamba env create -f ONT-AmpSeq_bash_version.yml
+```
 ### Usage
-The workflow requires the installation of various tools. This can be facili
+Arguments to the script can be passed through a command-line interface. The required conda environment is activated within the script:
 ```
 USAGE="
 -- ONT-AmpSeq: Workflow for generation of OTU table. Z-clustered OTU consensus polish with Medaka
@@ -289,8 +295,10 @@ where:
 ```
 Example command:
 ```
-bash ONT-AmpSeq-main/scripts/ONT-AmpSeq_bash_version.sh
+cd /path/to/home-dir/ONT-AmpSeq-main
+bash workflow/scripts/ONT-AmpSeq_bash_version.sh -i .test/test_data -o some_output_dir -t 1 -j 1 -l 1200 -u 1600 -q 20 -m r1041_e82_400bps_hac_v4.2.0 -r SINTAX -d .test/databases/SINTAX_MiDAS_5.3_extract.fa
 ```
+The code-snippet will run the workflow on the minimal test data located in `.test/test_data`, using only 1 thread. It filters reads for a length 1200 - 1600 bp, with a Q-score >20 and outputting OTU-tables with taxonomy annotated using the [SINTAX algorithm](#sintax-database) in `some_output_dir`.  
 
 # TODO
 * Add release version
