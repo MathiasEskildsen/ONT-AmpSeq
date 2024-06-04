@@ -1,5 +1,4 @@
 configfile: "config/config.yaml"
-include: "common.smk"
 rule prep_for_ampvis2_sintax:
     input:
         input_all = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv")

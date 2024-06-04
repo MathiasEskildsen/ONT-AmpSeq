@@ -83,3 +83,24 @@ if __name__ == "__main__":
     input_file = sys.argv[1]
     output_file = sys.argv[2]
     process_phyloseq_tax(input_file, output_file)
+# Prepare inputs for rule all
+## Rule all currently outputs all file formats. You can change this to only output the files you need.
+## For example you can remove the blast files if you only need sintax annotation. By default, both sintax and blast files are output.
+## You can also change the similarity level to any% by changing the id to the desired % in the expand function.
+## You can comment out the files you don't need in the expand function.
+def prepare_inputs():
+    inputs = []
+    ids = ["97", "99"]
+    if config["include_sintax_output"]:
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "OTUtable_tax_{id}_sintax.tsv"), id=ids))
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_tax_{id}_sintax.tsv"), id=ids))
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_abundance_{id}_sintax.tsv"), id=ids))
+
+    if config["include_blast_output"]:
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "OTUtable_tax_{id}_blast.tsv"), id=ids))
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_tax_{id}_blast.tsv"), id=ids))
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_abundance_{id}_blast.tsv"), id=ids))
+    
+    inputs.append(expand(os.path.join(config['output_dir'], "final", "report", "total_reads.tsv")))
+
+    return inputs
