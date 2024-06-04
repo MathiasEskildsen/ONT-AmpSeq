@@ -1,5 +1,7 @@
 name: blast
 channels:
   - bioconda
+  - conda-forge
+  - defaults
 dependencies:
-  - blast=2.15.0
+  - blast=2.14.0
