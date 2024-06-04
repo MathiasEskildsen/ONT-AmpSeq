@@ -7,3 +7,6 @@ tmp/**
 output_test
 output_test/**
 workflow_dryrun.txt
+data
+data/samples
+data/samples/**

@@ -309,13 +309,13 @@ Assuming you have followed the guide for [local installation](#usage-of-workflow
 ```
 cd /path/to/ONT-AmpSeq-main
 mamba activate snakemake
-snakemake --cores all --use-conda --configfile .test/config/config.yaml
+snakemake --cores all --use-conda
 ```
 AAU BioCloud HPC users, execute the following:
 ```
 cd /path/to/ONT-AmpSeq-main
 mamba activate snakemake
-snakemake --profile profiles/biocloud --configfile .test/config/config.yaml
+snakemake --profile profiles/biocloud
 ```
 These commands should run the workflow and produce a directory called `output_test/final` containing OTU tables ready for further analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) or [PhyloSeq](https://joey711.github.io/phyloseq/). If no error-messages occoured during the run and the final files contains data, the pipeline has run succesfully and ready to process more data.
 ### Stats script
@@ -337,4 +337,3 @@ These commands should run the workflow and produce a directory called `output_te
 # TODO
 * Add release version
 * Add split_taxonomy.py script to better handle edge case annotation from blast
-* Add .test to pass linting test

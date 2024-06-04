@@ -2,7 +2,7 @@
 # then all fastq files in each subfolder is concatenated and the folder name is used a sample ID downstream
 # Input files can also be located directly in the input folder, but then the sample ID is the filename and not the folder name
 # This can give some funny names if the filenames are not properly formatted, however it should not affect the output
-input_dir: "data/samples/"
+input_dir: ".test/test_data"
 
 ## Path to desired output directory
 output_dir: "results"
@@ -12,15 +12,15 @@ log_dir: "logs"
 # This file is for various variables used throughout the workflow.
 # Everything else regarding how things are run should go in the profile config
 # Provide paths to database of your choice or both if you want to run both 
-db_path_sintax: "/databases/midas/MiDAS5.2_20231221/output/FLASVs_w_sintax.fa"
-db_path_blast: "/home/bio.aau.dk/mk20aj/databases/MIDAS"
+db_path_sintax: ".test/databases/zymo_reference.fa"
+db_path_blast: ".test/databases/blast_zymo"
 evalue: 1e-10 # E-value cutoff for blast
 
 # Parameters for filtering reads (filtering.smk)
 # Change based on amplicon length and desired quality
 length_lower_limit: 1200 # minimum length of reads to keep
 length_upper_limit: 1600 # maximum length of reads to keep
-quality_cut_off: 23 # minimum quality score to keep (phred-score)
+quality_cut_off: 20 # minimum quality score to keep (phred-score)
 
 # Number of threads to use for individual roles.
 # Not ideal, but threads can be set in multiple places, so the best is to set 
