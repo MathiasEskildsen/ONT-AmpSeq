@@ -25,6 +25,23 @@ def listFastq(wildcards):
                     fastqs.append(os.path.join(sample_path, file))
     return fastqs
 
+# Define the function to list samples
+def get_samples():
+    sample_path = config['input_dir']
+    samples = []
+    if os.path.isdir(sample_path):
+        subdirs = [d for d in os.listdir(sample_path) if os.path.isdir(os.path.join(sample_path, d))]
+        if subdirs:
+            samples = subdirs
+        else:
+            files = [f for f in os.listdir(sample_path) if os.path.isfile(os.path.join(sample_path, f))]
+            for file in files:
+                # Handle files with multiple extensions
+                file_base = re.sub(r'\.fastq(\.gz)?$', '', file)
+                if file_base not in samples:
+                    samples.append(file_base)
+    return samples
+
 # merge_abund_tax_blast - rule "10_prep_for_ampvis2.smk - merge_abund_tax_blast"
 import pandas as pd
 import sys

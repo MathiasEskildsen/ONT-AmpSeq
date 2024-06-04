@@ -157,7 +157,6 @@ statistics() {
 
 export -f statistics
 
-module load parallel/20220722-GCCcore-11.3.0
 parallel -j "$JobNr" statistics ::: "${files[@]}" ::: $((threads / JobNr)) ::: "$output_dir" 
 module purge
 

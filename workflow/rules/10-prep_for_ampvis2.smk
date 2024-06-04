@@ -1,5 +1,4 @@
 configfile: "config/config.yaml"
-
 include: "common.smk"
 rule prep_for_ampvis2_sintax:
     input:
@@ -13,53 +12,11 @@ rule prep_for_ampvis2_sintax:
     resources:
         mem_mb = 2048,
         runtime = "01:00:00"
-    run:
-        import csv
-        input_file = input["input_all"]
-        output_file = output["output_all"]
-        new_column_headers = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
+    conda:
+        "../envs/generic.yml"
+    script:
+        "../scripts/prep_for_ampvis2_sintax.py"
 
-        # Create a dictionary to map field names to new column values
-        field_mapping = {
-            "d": "kingdom",
-            "k": "kingdom",
-            "p": "phylum",
-            "c": "class",
-            "o": "order",
-            "f": "family",
-            "g": "genus",
-            "s": "species",
-            }
-
-        # Function to extract and map the values to the new columns
-        def extract_and_map_values(input_row):
-            last_column = input_row.pop()  # Remove the last column
-            field_values = {field: "" for field in new_column_headers}
-            parts = last_column.split(",")
-            
-            for part in parts:
-                field_prefix, value = part.split(":") if ":" in part else (None, part)
-                new_column = field_mapping.get(field_prefix)
-                if new_column:
-                    field_values[new_column] = f"{new_column}__{value}"
-
-            new_row = input_row + [field_values[field] for field in new_column_headers]
-
-            return new_row
-
-        # Open the input and output files
-        with open(input_file, mode="r") as infile, open(output_file, mode="w", newline="") as outfile:
-            reader = csv.reader(infile, delimiter="\t")
-            writer = csv.writer(outfile, delimiter="\t")
-
-            # Write the headers with the new columns
-            headers = next(reader)[:-1] + new_column_headers
-            writer.writerow(headers)
-
-            # Process and write the data
-            for row in reader:
-                modified_row = extract_and_map_values(row)
-                writer.writerow(modified_row)
 rule ampvis2_modifications_sintax:
     input:
         os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
@@ -96,19 +53,3 @@ rule ampvis2_modifications_sintax:
         sed -i '1 s/#OTU ID/OTU/' {output.tmp}
         awk -F'\t' 'BEGIN {{OFS="\t"}} {{for (i=1; i<=NF; i++) gsub(/^[ \t]+|[ \t]+$/, "", $i)}} 1' {output.tmp} > {output.final}
     """
-
-rule merge_abund_tax_blast:
-    input:
-        tax = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt"),
-        abund = os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv")
-    output:
-        os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_blast.tsv')
-    threads:
-        1
-    resources:
-        mem_mb = 1024,
-        runtime = "01:00:00"
-    log:
-        os.path.join(config['log_dir'], "taxonomy_blast", 'merge_abund_tax_blast_{id}.log')
-    run:
-        merge_abund_tax_blast(input["tax"], input["abund"], output[0])

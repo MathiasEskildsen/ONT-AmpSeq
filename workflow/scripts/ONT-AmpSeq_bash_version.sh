@@ -106,7 +106,7 @@ mkdir -p $project_dir/8_OTUtable/99
 
 
 #load conda environment
-conda activate OTUtable
+#conda activate OTUtable
 
 #Filter based upon information gained from "Amp-Seq_Statistics" workflow
 input="$input_fastq" ##Input path to folder containing merged .fastq files
@@ -114,9 +114,9 @@ output="$project_dir/2_filtering" ## Output path
 
 # Loop to create output directories for each input file in the output directory
 # Use find to locate files with the pattern "_merged.fastq"
-files=$(find "$input"/* -type f -name "*_merged.fastq")
+files=$(find "$input"/* -type f -name "*.f*q")
 for file in $files; do
-    subdirectory_name=$(basename "$file" _merged.fastq)
+    subdirectory_name=$(basename "$file")
     output_dir="${output}/${subdirectory_name}"
     echo "created directory for $subdirectory_name in $output"
     mkdir -p "$output_dir"
@@ -126,7 +126,7 @@ done
 input="$input_fastq"
 output="$project_dir/2_filtering"
 
-files=($(find "$input"/* -type f -name "*_merged.fastq"))
+files=($(find "$input"/* -type f -name "*.f*q"))
 run_filtering () {
     local file="$1"
     local output="$2" 
@@ -195,25 +195,16 @@ input="$project_dir/4_zotus"
 combined="$project_dir/5_zotus_cat/zotus_concatenated.fa"
 output="$project_dir/6_medaka"
 
-files=( $(ls ${input}/*.fa) ) 
-run_mini_align() {
-    local file="$1"
-    local combined="$2"
-    local output="$3"
-    local threads="$4"
-
+files=( "${input}"/*.fa )
+for file in  "${files[@]}"; do
     file_prefix=$(basename "$file" | cut -d '_' -f 1)
-    sub_dir="${output}/${file_prefix}"
-    mkdir -p "$sub_dir"
-    output_file="${sub_dir}/${file_prefix}_calls_to_draft"
-
-    mini_align  -r "$file" -i "$combined" -m \
-        -p "$output_file" \
+    sub_dir=${output}/${file_prefix}
+    mkdir -p $sub_dir
+    output_file=${sub_dir}/${file_prefix}_calls_to_draft
+    mini_align -i ${combined} -r ${file} -m \
+        -p ${output_file} \
         -t $threads
-}
-export -f run_mini_align
-
-parallel -j $JobNr run_mini_align ::: "${files[@]}" ::: "$combined" ::: "$output" ::: $((threads / JobNr))
+done
 
 echo "run_mini_align finished"
 

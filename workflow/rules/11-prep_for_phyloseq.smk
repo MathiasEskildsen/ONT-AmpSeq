@@ -8,6 +8,8 @@ rule phyloseq_abund_sintax:
         os.path.join(config['log_dir'], "phyloseq_abundance", 'phyloseq_{id}.log')
     threads:
         1
+    conda:
+        "../envs/generic.yml"
     resources:
         mem_mb = 1024,
         runtime = "01:00:00"
@@ -62,25 +64,3 @@ rule phyloseq_tax1_sintax:
                 fields = line.split('\t')
                 modified_fields = [fields[0]] + [field[3:] for field in fields[1:]]
                 f_out.write('\t'.join(modified_fields) + '\n')
-rule individual_outputs_blast:
-    input:
-        abund = os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv"),
-        tax = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt")
-    output:
-        abund = os.path.join(config['output_dir'], "final", "{id}", "phyloseq_abundance_{id}_blast.tsv"),
-        tax = os.path.join(config['output_dir'], "final", "{id}", "phyloseq_tax_{id}_blast.tsv")
-    log: 
-        os.path.join(config['log_dir'], "phyloseq_tax", 'phyloseq_{id}.log')
-    threads:
-        1
-    resources:
-        mem_mb = 1024,
-        runtime = "01:00:00"
-    conda:
-        "../envs/generic.yml"
-    shell:
-        """
-        cp {input.tax} {output.tax}
-        cp {input.abund} {output.abund}
-        sed -i '1 s/#OTU ID/OTU/' {output.abund}
-        """

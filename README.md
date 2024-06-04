@@ -17,10 +17,11 @@ This workflow is actively maintained and supported, with new features continuous
 - [Stats script](#stats-script-nanoplotsh)
 - [Database Choice](#databases)
 - [Bash Script](#ont-ampseq-in-bash-script-format)
+- [Running Test Data](#running-test-data)
 
 ## Requirements
 ### Hardware requirements
-As a general recommendation for running ONT-AmpSeq whilst producing every possible output, at least 32 threads and 40 GB of memory are advised. THese high requirements stem from the multithreading capabilities of the various software and tools used in the pipeline, as well as the need/possibility to handle very large datasets and databases. While the pipeline has been successfully run with 1 thread and as little as 4 GB of memory using smaller datasets `~/ONT-AmpSeq/.test/test_data` and the MiDAS v5.3 [SINTAX database](https://www.midasfieldguide.org/guide/downloads), using large datasets may cause minimap2 to run out of memory. Additionally, loading the general BLAST-formatted [GenBank database](https://www.ncbi.nlm.nih.gov/genbank/) requires ~40 GB of memory. For more details, see [BLAST database formatting](#databases).
+As a general recommendation for running ONT-AmpSeq whilst producing every possible output, at least 32 threads and 40 GB of memory are advised. These high requirements stem from the multithreading capabilities of the various software and tools used in the pipeline, as well as the need/possibility to handle very large datasets and databases. While the pipeline has been successfully run with 1 thread and as little as 4 GB of memory using smaller datasets `~/ONT-AmpSeq/.test/test_data` and the MiDAS v5.3 [SINTAX database](https://www.midasfieldguide.org/guide/downloads), using large datasets may cause minimap2 to run out of memory. Additionally, loading the general BLAST-formatted [GenBank database](https://www.ncbi.nlm.nih.gov/genbank/) requires ~40 GB of memory. For more details, see [BLAST database formatting](#databases).
 
 ### Software requirements
 To run ONT-AmpSeq, Linux OS or Windows Subsystem for Linux (WSL) is required. Installation of software/tools utilized in the workflow is based on, and requires, conda. Using Snakemake, the correct versions of the tools will automatically be installed to ensure version compatibility. However, prior to installing ONT-AmpSeq, conda and the appropriate conda environment are required to facilitate the installation of the various utilised tools for both the Snakemake and SnakeDeploy installations. For more details, see [SnakeDeploy installation](#usage-of-workflow-snakedeploy).
@@ -166,7 +167,7 @@ NOTE: `{id}` refers to the percentage identity which reads should be similar in 
 * `ONT-AmpSeq-main/results/final/{id}/OTUtable_tax_{id}_{tax}.tsv`: This matrix contains the number of reads per sample per OTU. The taxonomy of each OTU is annotated by using either the [SINTAX](#sintax-database) or [BLAST](#blast-database) algorithm. The OTU tables are formatted to be ready for data analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html).
 NOTE: BLAST results in a high degree of “edge-cases” due to the formatting of output taxonomy. Which has no restrictions on the database header format. Be sure to manually inspect and double-check the annotated taxonomy when using this approach, as it can result in problems with the [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) R-package. See [BLAST] (#databases) for more information regarding the BLASTn formatted database.
 * `ONT-AmpSeq-main/results/final/{id}/phyloseq_tax_{id}_{tax}.tsv`: This matrix contains taxonomy for each OTU annotated by using either the [SINTAX algorithm](#sintax-database) or [BLAST algorithm](#blast-database). This taxonomy table is preformatted to be directly compatible with the `tax_table` variable for creating and analysing a [phyloseq object]( https://joey711.github.io/phyloseq/).
-* `ONT-AmpSeq-main/results/final/{id}/phyloseq_abundance_{id}_{tax}.tsv`: This matrix contains number of reads per sample per OTU. This OTU table is preformatted to be directly compatible with the otu_table for creating and analysing a [phyloseq object]( https://joey711.github.io/phyloseq/).
+* `ONT-AmpSeq-main/results/final/{id}/phyloseq_abundance_{id}_{tax}.tsv`: This matrix contains number of reads per sample per OTU. This OTU table is preformatted to be directly compatible with the otu_table for creating and analysing a [phyloseq object](https://joey711.github.io/phyloseq/).
 * `ONT-AmpSeq-main/results/final/report/total_reads.tsv`: This file provides an overview of the number of reads in each sample pre- and post-filtering.
 ## Stats script (nanoplot.sh)
 The stats script, `nanoplot.sh`, is a bash-script used to visualise read characteristics of the amplicon-sequencing data produced by ONT. The script works on both compressed and decompressed `*.fastq` files. The input format for the stats script is described [above](#input-format).
@@ -271,7 +272,7 @@ cd /path/to/home-dir/ONT-AmpSeq-main
 mamba env create -f ONT-AmpSeq_bash_version.yml
 ```
 ### Usage
-Arguments to the script can be passed through a command-line interface. The required conda environment is activated within the script:
+Arguments to the script can be passed through a command-line interface:
 ```
 USAGE="
 -- ONT-AmpSeq: Workflow for generation of OTU table. Z-clustered OTU consensus polish with Medaka
@@ -296,10 +297,43 @@ where:
 Example command:
 ```
 cd /path/to/home-dir/ONT-AmpSeq-main
-bash workflow/scripts/ONT-AmpSeq_bash_version.sh -i .test/test_data -o some_output_dir -t 1 -j 1 -l 1200 -u 1600 -q 20 -m r1041_e82_400bps_hac_v4.2.0 -r SINTAX -d .test/databases/SINTAX_MiDAS_5.3_extract.fa
+mamba activate OTUtable
+bash workflow/scripts/ONT-AmpSeq_bash_version.sh -i .test/test_data -o some_output_dir -t 5 -j 3 -l 1200 -u 1600 -q 20 -m r1041_e82_400bps_hac_v4.2.0 -r SINTAX -d .test/databases/SINTAX_MiDAS_5.3_extract.fa
 ```
-The code-snippet will run the workflow on the minimal test data located in `.test/test_data`, using only 1 thread. It filters reads for a length 1200 - 1600 bp, with a Q-score >20 and outputting OTU-tables with taxonomy annotated using the [SINTAX algorithm](#sintax-database) in `some_output_dir`.  
+The code-snippet will run the workflow on the minimal test data located in `.test/test_data`, using a total of 15 threads, 5 threads per job in 3 jobs. It filters reads for a length 1200 - 1600 bp, with a Q-score >20 and outputting OTU-tables with taxonomy annotated using the [SINTAX algorithm](#sintax-database) in `some_output_dir`.  
 
+## Running Test Data
+To ensure that the complete pipeline and individual scripts are executed as expected, we have included test data and databases to facilitate the analysis. The test data and databases are located in `.test/test_data` and `.test/databases`, respectively. The data includes three samples of 15,000 reads from 16S rRNA V1-8 amplicon data. The databases includes a [SINTAX database](#sintax-database) constructed from the [Zymo community composition](https://zymoresearch.eu/collections/zymobiomics-microbial-community-standards/products/zymobiomics-microbial-community-dna-standard) and a corresponding [BLAST database](#blast-database).
+### Snakemake workflow
+Assuming you have followed the guide for [local installation](#usage-of-workflow-local-repository-installation-aau-biocloud-hpc-users) or manually downloaded the `.test` directory. Execute the following:
+```
+cd /path/to/ONT-AmpSeq-main
+mamba activate snakemake
+snakemake --cores all --use-conda --configfile .test/config/config.yaml
+```
+AAU BioCloud HPC users, execute the following:
+```
+cd /path/to/ONT-AmpSeq-main
+mamba activate snakemake
+snakemake --profile profiles/biocloud --configfile .test/config/config.yaml
+```
+These commands should run the workflow and produce a directory called `output_test/final` containing OTU tables ready for further analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) or [PhyloSeq](https://joey711.github.io/phyloseq/). If no error-messages occoured during the run and the final files contains data, the pipeline has run succesfully and ready to process more data.
+### Stats script
+Assuming you have followed the guide for [local installation](#usage-of-workflow-local-repository-installation-aau-biocloud-hpc-users) or manually downloaded the `.test` directory and set-up the required environment [previously described](#stats-script). Execute the following:
+```
+cd /path/to/ONT-AmpSeq-main
+mamba activate stats
+bash workflow/scripts/nanoplot.sh -t 8 -j 1 -i .test/test_data -o output_test
+```
+Check if the figures has been generated in `output_test/stats/sample1` if so, the stats script is ready to process more data.
+### ONT-AmpSeq bash-script
+Assuming you have followed the guide for [local installation](#usage-of-workflow-local-repository-installation-aau-biocloud-hpc-users) or manually downloaded the `.test` directory, `workflow/scripts/ONT-AmpSeq_bash_version.sh` and set-up the required environment [previously described](#ont-ampseq-in-bash-script-format). Execute the following:
+```
+cd /path/to/ONT-AmpSeq-main
+mamba activate OTUtable
+bash workflow/scripts/ONT-AmpSeq_bash_version.sh -t 5 -j 3 -i .test/test_data -o output_test -l 1200 -u 1600 -q 20 -r SINTAX -d .test/databases/zymo_reference.fa
+```
+These commands should run the workflow and produce a directory called `output_test/8_OTUtable` containing OTU tables ready for further analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) or [PhyloSeq](https://joey711.github.io/phyloseq/). If no error-messages occoured during the run and the final files contains data, the pipeline has run succesfully and ready to process more data.
 # TODO
 * Add release version
 * Add split_taxonomy.py script to better handle edge case annotation from blast
