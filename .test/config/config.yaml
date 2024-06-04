@@ -1,9 +1,9 @@
-input_dir: ".test/test_data"
+input_dir: "test_data"
 output_dir: "output_test"
 tmp_dir: "tmp"
 log_dir: "logs"
-db_path_sintax: ".test/databases/zymo_reference.fa"
-db_path_blast: ".test/databases/blast_zymo"
+db_path_sintax: "databases/zymo_reference.fa"
+db_path_blast: "databases/blast_zymo"
 evalue: 1e-10
 length_lower_limit: 1200
 length_upper_limit: 1600
