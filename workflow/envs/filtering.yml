@@ -1,5 +1,7 @@
 name: filtering
 channels:
   - bioconda
+  - conda-forge
+  - defaults
 dependencies:
   - chopper=0.7.0

@@ -1,5 +1,7 @@
 name: vsearch
 channels:
   - bioconda
+  - conda-forge
+  - defaults
 dependencies:
   - vsearch=2.27.0
