@@ -66,8 +66,9 @@ cd path/to/ONT-AmpSeq
 In the following steps, it is assumed that you are located in your working directory `path/to/ONT-AmpSeq`.
 Second, run the SnakeDeploy command for ONT-AmpSeq:
 ```
-snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --branch main
+snakedeploy deploy-workflow https://github.com/MathiasEskildsen/ONT-AmpSeq . --tag v1.0.0
 ```
+NOTE: Replace v1.0.0 with latest version under releases.
 
 SnakeDeploy will then create two directories: `workflow` and `config`. The `workflow` directory contains the deployment of the chosen workflow (ONT-AmpSeq) as a [Snakemake module](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#using-and-combining-pre-exising-workflows). The `config` directory contains configuration files, that can be modified to suit user-defined criteria and individual datasets. When executing the workflow, Snakemake will automatically find the main `Snakefile` in the `workflow` subdirectory. 
 
