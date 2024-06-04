@@ -8,7 +8,7 @@ rule concatenate_fastq:
         total_reads = temp(os.path.join(config['tmp_dir'], "read_count", "{sample}", "{sample}_total_reads_pre_filtering.tsv"))
     resources:
         mem_mb = 512,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/generic.yml"
     threads: 1

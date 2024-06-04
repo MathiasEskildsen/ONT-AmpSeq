@@ -1,8 +1,5 @@
 configfile: "config/config.yaml"
-
 import os
-# Function to change fastq headers to fasta headers
-# And create a list of all new files with fasta headers
 rule convert_to_fasta:
     input:
         os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq")
@@ -11,7 +8,7 @@ rule convert_to_fasta:
     threads: 1
     resources:
         mem_mb = 512,
-        runtime = "01:00:00" # - Adding run time to the rule
+        runtime = 60
     conda:
         "../envs/vsearch.yml"
     log:
@@ -29,7 +26,7 @@ rule vsearch_cluster:
         1
     resources:
         mem_mb = 2048,
-        runtime = "1-00:00:00"
+        runtime = 1440
     conda:
         "../envs/vsearch.yml"
     log:

@@ -12,7 +12,7 @@ rule phyloseq_abund_sintax:
         "../envs/generic.yml"
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     shell:
         """
         cp {input} {output}
@@ -31,7 +31,7 @@ rule phyloseq_sintax:
         1
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/generic.yml"
     script:

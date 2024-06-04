@@ -8,7 +8,7 @@ rule cluster_ID:
         config['max_threads']
     resources:
         mem_mb = 2048,
-        runtime = "1-00:00:00"
+        runtime = 1440
     conda:
         "../envs/vsearch.yml"
     log:

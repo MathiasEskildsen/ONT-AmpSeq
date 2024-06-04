@@ -30,8 +30,7 @@ rule relabel_merge:
         1
     resources:
         mem_mb = 512,
-        runtime = "01:00:00",
-        threads = 1
+        runtime = 60
     conda:
         "../envs/vsearch.yml"
     log:

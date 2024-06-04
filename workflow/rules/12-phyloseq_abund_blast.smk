@@ -11,7 +11,7 @@ rule individual_outputs_blast:
         1
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/generic.yml"
     shell:
@@ -30,7 +30,7 @@ rule merge_abund_tax_blast:
         1
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     log:
         os.path.join(config['log_dir'], "taxonomy_blast", 'merge_abund_tax_blast_{id}.log')
     run:

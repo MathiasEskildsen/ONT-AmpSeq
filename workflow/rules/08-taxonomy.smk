@@ -8,7 +8,7 @@ rule taxonomy_sintax:
         config['max_threads']
     resources:
         mem_mb = 2048,
-        runtime = "02:00:00"
+        runtime = 120
     conda:
         "../envs/vsearch.yml"
     params:
@@ -36,7 +36,7 @@ rule taxonomy_blast:
         config['max_threads']
     resources:
         mem_mb = 40960,
-        runtime = "7-00:00:00"
+        runtime = 10080
     conda:
         "../envs/blast.yml"
     params:

@@ -8,7 +8,7 @@ rule filter_fastq:
         2
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     params:
         length_lower_limit = config['length_lower_limit'],
         length_upper_limit = config['length_upper_limit'],
@@ -45,7 +45,7 @@ rule merge_read_count:
         2
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/filtering.yml"
     log: 

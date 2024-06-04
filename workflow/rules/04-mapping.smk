@@ -11,8 +11,8 @@ rule concatenate_otus:
     log:
         os.path.join(config["log_dir"], "concat_otus","concatenate_otus.log")
     resources:
-        mem_mb = 1024, #1GB
-        runtime = "01:00:00" # <-- Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
+        mem_mb = 1024,
+        runtime = 60
     shell:
         """
         cat {input} > {output}
@@ -25,8 +25,8 @@ rule mapping:
     output:
         os.path.join(config["output_dir"], "mapping", "samples", "{sample}_aligned.sam")
     resources:
-        mem_mb = 40960, #40GB
-        runtime = "2-00:00:00" # <-- Adding run time to the rule. Standard on SLURM config is 1 hour. days-hours:minutes:seconds
+        mem_mb = 40960,
+        runtime = 2880
     threads:
         config['max_threads']
     conda:

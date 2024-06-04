@@ -30,7 +30,7 @@ rule prep_input_blast:
         1
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/generic.yml"
     log:

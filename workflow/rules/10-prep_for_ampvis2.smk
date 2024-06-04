@@ -10,7 +10,7 @@ rule prep_for_ampvis2_sintax:
         1
     resources:
         mem_mb = 2048,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/generic.yml"
     script:
@@ -26,7 +26,7 @@ rule ampvis2_modifications_sintax:
         1
     resources:
         mem_mb = 1024,
-        runtime = "01:00:00"
+        runtime = 60
     conda:
         "../envs/generic.yml"
     log:
