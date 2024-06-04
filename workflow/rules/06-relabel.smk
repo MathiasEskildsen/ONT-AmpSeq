@@ -9,7 +9,7 @@ rule relabel:
         1
     resources:
         mem_mb = 2048,
-        runtime = "01:00:00"
+        runtime = 60
     log:
         os.path.join(config['log_dir'], "relabel", "{sample}.log")
     shell:
