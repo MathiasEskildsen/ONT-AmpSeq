@@ -1,4 +1,5 @@
 input_dir: "test_data"
+metadata: "metadata/metadata_test.txt"
 output_dir: "output_test"
 tmp_dir: "tmp"
 log_dir: "logs"

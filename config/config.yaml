@@ -3,7 +3,7 @@
 # Input files can also be located directly in the input folder, but then the sample ID is the filename and not the folder name
 # This can give some funny names if the filenames are not properly formatted, however it should not affect the output
 input_dir: ".test/test_data"
-
+metadata: ".test/metadata/metadata_test.txt"
 ## Path to desired output directory
 output_dir: "results"
 tmp_dir: "tmp"

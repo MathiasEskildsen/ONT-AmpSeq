@@ -1,0 +1,4 @@
+SampleID	Day	Condition
+sample1	day 1	Test 1
+sample2	day 2	Test 2
+sample3	day 3	Test 3

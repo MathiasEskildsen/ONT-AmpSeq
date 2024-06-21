@@ -22,6 +22,7 @@ include: "rules/09-fix_otu_table.smk"
 include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load() reads sintax files directly, see "taxonomy" here https://kasperskytte.github.io/ampvis2/reference/amp_load.html#arguments-1
 include: "rules/11-prep_for_phyloseq.smk"
 include: "rules/12-phyloseq_abund_blast.smk"
+include: "rules/13-ampvis2_std_plots.smk"
 ## Function to generate output files for "rule all" are defined in the common.smk file
 rule all:
     input:
