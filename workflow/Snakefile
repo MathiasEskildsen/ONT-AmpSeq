@@ -23,6 +23,7 @@ include: "rules/10-prep_for_ampvis2.smk" # <- shouldn't be necessary, amp_load()
 include: "rules/11-prep_for_phyloseq.smk"
 include: "rules/12-phyloseq_abund_blast.smk"
 include: "rules/13-ampvis2_std_plots.smk"
+include: "rules/capture_config.smk" # <- this is a custom rule to capture the config file and changes to config file
 ## Function to generate output files for "rule all" are defined in the common.smk file
 rule all:
     input:

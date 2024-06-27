@@ -112,5 +112,5 @@ def prepare_inputs():
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "figs", "{id}", "Boxplot_{id}_blast.png"), id=ids))
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "R-environment", "{id}", "R-environment_{id}_blast.RData"), id=ids))        
     inputs.append(expand(os.path.join(config['output_dir'], "final", "report", "total_reads.tsv")))
-
+    inputs.append(expand(os.path.join(config["output_dir"], "config.txt")))
     return inputs

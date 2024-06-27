@@ -12,5 +12,5 @@
 - `length_upper_limit`: Argument passed on to `chopper` for filtering reads. Appropriate values depends on amplicon length. This can be checked by running the helper script scripts/nanoplot.sh 
 - `quality_cut_off`: Argument passed on to `chopper` for filtering reads. Appropriate value depends on the quality of your sequencing data. This can be checked by running the helper script scripts/nanoplot.sh. It is recommended to pick a Q-score >20, if your data permits it.
 - `max_threads`: Maximum number of threads that can be used for any rule.
-- `include_blast_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
-- `include_sintax_output`: Default = true. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.
+- `include_blast_output`: Default = True. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
+- `include_sintax_output`: Default = True. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.

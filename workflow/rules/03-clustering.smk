@@ -23,9 +23,9 @@ rule vsearch_cluster:
     output:
         os.path.join(config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta")
     threads:
-        1
+        config["max_threads"]
     resources:
-        mem_mb = 2048,
+        mem_mb = 8192,
         runtime = 1440
     conda:
         "../envs/vsearch.yml"

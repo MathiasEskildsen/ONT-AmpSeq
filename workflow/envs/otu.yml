@@ -1,8 +1,7 @@
 name: otu
 channels:
+  - conda-forge
   - bioconda
   - anaconda
-  - conda-forge
-  - defaults
 dependencies:
   - python=3.10.11

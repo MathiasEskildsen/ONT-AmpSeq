@@ -10,3 +10,5 @@ workflow_dryrun.txt
 data
 data/samples
 data/samples/**
+true_test
+stats

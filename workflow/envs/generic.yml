@@ -1,8 +1,7 @@
 name: generic
 channels:
-  - bioconda
   - conda-forge
-  - defaults
+  - bioconda
 dependencies:
   - gzip=1.13
   - python=3.12.1

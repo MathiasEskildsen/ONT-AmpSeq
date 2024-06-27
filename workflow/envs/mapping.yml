@@ -1,8 +1,7 @@
 name: mapping
 channels:
-  - bioconda
   - conda-forge
-  - defaults
+  - bioconda
 dependencies:
   - minimap2=2.26
   - samtools=1.19.2

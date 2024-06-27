@@ -1,7 +1,6 @@
 name: polish
 channels:
-  - bioconda
   - conda-forge
-  - defaults
+  - bioconda
 dependencies:
   - racon=1.5.0

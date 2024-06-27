@@ -28,6 +28,6 @@ quality_cut_off: 20 # minimum quality score to keep (phred-score)
 # in the profile config.yaml to suit your particular computing setup.
 max_threads: 32
 
-# Include final blast and sintax output (default is true for both)
-include_blast_output: true
-include_sintax_output: true
+# Include final blast and sintax output (default is True for both)
+include_blast_output: True
+include_sintax_output: True
