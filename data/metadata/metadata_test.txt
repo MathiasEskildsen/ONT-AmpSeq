@@ -1,0 +1,4 @@
+SampleID	Day	Condition
+ERR12363979	day 1	Test 1
+ERR12363984	day 2	Test 2
+ERR12363993	day 3	Test 3
