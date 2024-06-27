@@ -383,6 +383,7 @@ wget -qO- https://github.com/MathiasEskildsen/ONT-AmpSeq/archive/refs/heads/main
 ```
 Download the test data:
 ```
+mkdir -p ~/example_case/ONT-AmpSeq-main/data/samples 
 cd ~/example_case/ONT-AmpSeq-main/data/samples
 wget -O ERR12363979.fastq.gz ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR123/079/ERR12363979/ERR12363979.fastq.gz
 wget -O ERR12363984.fastq.gz ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR123/084/ERR12363984/ERR12363984.fastq.gz
