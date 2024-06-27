@@ -373,6 +373,7 @@ These commands should run the workflow and produce a directory called `output_te
 
 ## Example Usage
 This section will guide you through how to analyse 16S rRNA data, from start to finish. It requires, that you have followed the [steps](#software-requirements) in installing the package manager [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
+This example case, should be able to run on almost any Unix-like OS or WSL. The example ran succesfully on a machine in WSL with 4 cores and 3.8 GB memory in less than 20 minutes. 
 
 Download the required files for the pipeline:
 ```
