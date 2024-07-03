@@ -206,7 +206,7 @@ bash workflow/scripts/nanoplot.sh -t 1 -j 1 -o .test/stats_out -i .test/test_dat
 ```
 This visualisation will display the read characteristics for each sample, facilitating the configuration of ONT-AmpSeq. An easy way to assess the amplicon length and quality is through the provided plot `LengthvsQualityScatterPlot_dot.png`.
 <figure id="figref-nanoplot">
-  <img src=".test/stats_out/stats/sample1/LengthvsQualityScatterPlot_dot.png">
+  <img src="example_figures/LengthvsQualityScatterPlot_dot.png">
   <figcaption>
   <strong>Figure 1:</strong> Dot plot of the test data. Visualising read length on the x-axis and Q-score on the y-axis. This example reveals reads characteristics for one distinct amplicon for the 16S rRNA V1-8. 
   </figcaption>
