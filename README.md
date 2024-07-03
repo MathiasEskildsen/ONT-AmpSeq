@@ -76,10 +76,10 @@ The workflow needs to be configured according to the individual dataset content 
 * `evalue`: E-value cutoff for BLAST. Defaultvalue = 1e-10. See [databases](#blast-database).
 * `length_lower_limit`: Lower threshold length for filtering of amplicons. Default = 1200 bp. The amplicon filtering length should be adjusted, depending on the individual amplicon length for the given dataset. See [stats script](#stats-script-nanoplotsh) for a guide to setting an appropriate length treshold using the script `ONT-AmpSeq/workflow/scripts/nanoplot.sh`.
 * `length_upper_limit`: Upper threshold length for filtering of amplicons. Default = 1600 bp. The amplicon filtering length should be changed, depending on the individual amplicon length for the given dataset. See [stats script](#stats-script-nanoplotsh) for a guide to setting an appropriate length treshold using the script `ONT-AmpSeq/workflow/scripts/nanoplot.sh`.
-* `quality_cut_off`: Phred-quality score threshold (Q-score). Default = 23. To select an appropriate Q-score for a dataset, see [stats script](#stats-script-nanoplotsh) for a detailed guide for choosing appropriate Q-score and its effects.
+* `quality_cut_off`: Phred-quality score threshold (Q-score). Default = 20. To select an appropriate Q-score for a dataset, see [stats script](#stats-script-nanoplotsh) for a detailed guide for choosing appropriate Q-score and its effects.
 * `max_threads`: Maximum number of threads that can be used for any given rule.
-* `include_blast_output`: Default = True. If True, ONT-AmpSeq will annotate the final OTU-table using the [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) algorithm and a BlASTn formatted database.
-* `include_sintax_output`: Default = True. If True, ONT-AmpSeq will annotate the final OTU-table using the SINTAX algorithm and a [SINTAX formatted database](https://drive5.com/usearch/manual/sintax_algo.html).
+* `include_blast_output`: Default = True (case-sensitive). If True, ONT-AmpSeq will annotate the final OTU-table using the [BLAST](https://blast.ncbi.nlm.nih.gov/Blast.cgi) algorithm and a BlASTn formatted database.
+* `include_sintax_output`: Default = True (case-sensitive). If True, ONT-AmpSeq will annotate the final OTU-table using the SINTAX algorithm and a [SINTAX formatted database](https://drive5.com/usearch/manual/sintax_algo.html).
 
 The workflow configurations can also be changed directly via the command line. When specifying the configuration parameters through the command line, default values will be used unless otherwise specified. To specify changed values for the configuration through the command line, use the following structure:
 ```
@@ -91,7 +91,7 @@ snakemake --cores all --use-conda --config include_blast_output=False db_path_si
 The code snippet above will:
 1. Change your working directory
 2. Activate your conda environment containing Snakemake, as described in [step 1](#step-1-install-snakemake-and-snakedeploy).
-3. Run the ONT-AmpSeq pipeline using the specified configuration values. Disable the use of the BLAST algorithm, annotate the OTU’s using the SINTAX algorithm via the specified database path, , and filter the amplicon data to only include reads between 400 – 800bp with a Q-score <20. NOTE: False and True are case-sensitive, the first letter should be capitalized.
+3. Run the ONT-AmpSeq pipeline using the specified configuration values. Disable the use of the BLAST algorithm, annotate the OTU’s using the SINTAX algorithm via the specified database path, and filter the amplicon data to only include reads between 400 – 800bp with a Q-score <20. NOTE: False and True are case-sensitive, the first letter should be capitalized.
 
 NOTE: `--cores all` instructs Snakemake to use all available threads available on your machine, this can be changed according to your requirements. `--use-conda` enables Snakemake to run jobs in a conda environment, necesarry for certain rules.
 ### Step 4: Run the workflow
@@ -367,10 +367,10 @@ Now, execute the following:
 ```
 cd /path/to/ONT-AmpSeq-main
 mamba activate OTUtable
-bash workflow/scripts/ONT-AmpSeq_bash_version.sh -t 5 -j 3 -i .test/test_data -o output_test -l 1200 -u 1600 -q 20 -r SINTAX -d .test/databases/zymo_reference.fa
+bash workflow/scripts/ONT-AmpSeq_bash_version.sh -t 4 -j 3 -i .test/test_data -o output_test -l 1200 -u 1600 -q 20 -r SINTAX -d .test/databases/zymo_reference.fa
 ```
 These commands should run the workflow and produce a directory called `output_test/8_OTUtable` containing OTU tables ready for further analysis using [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) or [PhyloSeq](https://joey711.github.io/phyloseq/). If no error-messages occoured during the run and the final files contains data, the pipeline has run succesfully and ready to process more data.
-
+NOTE: The bash-script expects the input files to be decompressed prior analysis. Furthermore, it is highly recommended to use the snakemake pipeline as opposed to the bash-script, as the pipeline offers a more robust processing and reproducibility.
 ## Example Usage
 This section will guide you through how to analyse 16S rRNA data, from start to finish. It requires, that you have followed the [steps](#software-requirements) in installing the package manager [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html).
 This example case, should be able to run on almost any Unix-like OS or WSL. The example ran succesfully on a machine in WSL with 4 cores and 3.8 GB memory in less than 20 minutes. 
@@ -390,7 +390,6 @@ wget -O ERR12363984.fastq.gz ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR123/084/ERR12
 wget -O ERR12363993.fastq.gz ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR123/093/ERR12363993/ERR12363993.fastq.gz
 ```
 The test data for this example case are now located in `~/example_case/ONT-AmpSeq/data/samples` and contains three `.fastq` files. The `.fastq` files are Oxford Nanopore R10.4.1 full-length 16S rRNA amplicon data, obtained from BioProject accession number PRJEB71093 with run accession numbers: ERR12363979, ERR12363984 and ERR12363993. Furthermore, a minimal metadata sheet is provided at `~/example_case/ONT-AmpSeq/data/metadata/metadata_test.txt`, enabling automatic creation of standard plots in [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html).
-Download the test data:
 ```
 head ~/example_case/ONT-AmpSeq-main/data/metadata/metadata_test.txt
 SampleID        Day     Condition
@@ -442,7 +441,8 @@ cd ~/example_case/ONT-AmpSeq-main
 mamba activate snakemake
 snakemake --profile profiles/biocloud --config include_blast_output=False db_path_sintax=database/MiDAS_5.3_SINTAX.fa length_lower_limit=1200 length_upper_limit=1600 quality_cut_off=15 input_dir=data/samples metadata=data/metadata/metadata_test.txt
 ```
-The pipeline outputs OTU-tables with 97% and 99% identity ready for [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and files ready to load into [phyloseq](https://github.com/joey711/phyloseq), all located in `~/example_case/ONT-AmpSeq-main/reslts/final` in a sub-folder corresponding to their %identity, more information on outputs can be found [here](#output-files). Furthermore, initial plots are made using Ampvis2 and the metadata sheet:
+All information regarding configurations of the pipeline for a given run, is captured in a file located at `~/example_case/ONT-AmpSeq-main/results/config.txt`.
+The pipeline outputs OTU-tables with 97% and 99% identity ready for [Ampvis2](https://kasperskytte.github.io/ampvis2/index.html) and files ready to load into [phyloseq](https://github.com/joey711/phyloseq), all located in `~/example_case/ONT-AmpSeq-main/reslts/final` in a sub-folder corresponding to their %identity, more information on outputs can be found [here](#output-files). Explaination of all output file can be found [here](#output-files). Furthermore, initial plots are made using Ampvis2 and the metadata sheet:
 <figure id="figref-nanoplot">
   <img src="example_figures/Heatmap_99_sintax.png">
 </figure>

@@ -1,10 +1,22 @@
 #!/bin/bash -l
+#SBATCH --job-name=OTUtable_pindsvin_racon
+#SBATCH --output=/home/bio.aau.dk/te21rc/joblog/job_%j_%x.out
+#SBATCH --error=/home/bio.aau.dk/te21rc/joblog/job_%j_%x.err
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=180
+#SBATCH --mem=700G
+#SBATCH --time=14-00:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=pssc@bio.aau.dk
+
 # DESCRIPTION
 #   Script used for the generation of OTU-table from amplicon-sequencing data obtained from ONT
 #   This script should be run after "Amp-Seq_Statistics.sh"
 # Authors
-#   Mathias Eskildsen (mk20aj@bio.aau.dk)   
-#   Patrick Skov Schaksen (insert mail)
+#   Mathias Eskildsen (mk20aj@bio.aau.dk)
+#   Patrick Skov Schaksen (psschacksen@gmail.com)
 #   
 #
 #   License    
@@ -12,9 +24,12 @@
 # 
 # 
 ### DESCRIPTION -------------------------------------------------------------------------
+# Last modified 2023-12-19
+
+
 # Usage message
 USAGE="
--- ONT-AmpSeq: Workflow for generation of OTU table. Z-clustered OTU consensus polish with Medaka
+-- insert full pipeline name: Workflow for generation of OTU table. Z-clustered OTU consensus polish with Racon
 usage: $(basename "$0" .sh) [-h] [-i path] [-o path] [-t value] [-j value] [-l value] [-u value] [-q value] [-m string] [-M] [-r string] [-db path]
 
 
@@ -60,14 +75,14 @@ while getopts 'i:o:t:j:l:u:q:m:r:d:Mh' OPTION; do
 done
 
 # Check if the chosen method is blastn and prompt the user
-if [ "$method" == "blastn" ]; then
-    read -p "HEADS UP: You have chosen the method blastn for taxonomic classification. Make sure you have the blastn tool installed and the necessary database configured. Furthermore; blastn will only give you the best hit for the given OTU, however this is not always the correct classification. Do you want to proceed? (y/n): " choice
-    case "$choice" in
-        y|Y ) ;;
-        n|N ) echo "Exiting."; exit 1;;
-        * ) echo "Invalid choice. Exiting."; exit 1;;
-    esac
-fi
+#if [ "$method" == "blastn" ]; then
+#    read -p "HEADS UP: You have chosen the method blastn for taxonomic classification. Make sure you have the blastn tool installed and the necessary database configured. Furthermore; blastn will only give you the best hit for the given OTU, however this is not always the correct classification. Do you want to proceed? (y/n): " choice
+#    case "$choice" in
+#        y|Y ) ;;
+#        n|N ) echo "Exiting."; exit 1;;
+#        * ) echo "Invalid choice. Exiting."; exit 1;;
+#    esac
+#fi
 
 # Debugging
 
@@ -88,45 +103,47 @@ if [ -z ${method+x} ]; then echo "-r $MISSING"; echo "$USAGE"; exit 1; fi;
 
 -set eu 
 
-exec > >(tee -a $project_dir/joblog/joblog_main.txt) 2>&1
 
 #Create directories 
 mkdir -p $project_dir
 mkdir -p $project_dir/joblog
 mkdir -p $project_dir/2_filtering
 mkdir -p $project_dir/3_fastq-fa
-mkdir -p $project_dir/4_zotus
-mkdir -p $project_dir/5_zotus_cat
-mkdir -p $project_dir/6_medaka
-mkdir -p $project_dir/7_medaka_relabel
-mkdir -p $project_dir/7_medaka_relabel/combined_polished
+mkdir -p $project_dir/4_otus
+mkdir -p $project_dir/5_otus_cat
+mkdir -p $project_dir/6_racon
+mkdir -p $project_dir/7_racon_relabel
+mkdir -p $project_dir/7_racon_relabel/combined_polished
 mkdir -p $project_dir/8_OTUtable
 mkdir -p $project_dir/8_OTUtable/97
 mkdir -p $project_dir/8_OTUtable/99
+mkdir -p $project_dir/tmp
 
+exec > >(tee -a $project_dir/joblog/joblog_main.txt) 2>&1
 
-#load conda environment
-#conda activate OTUtable
+# Echo user-inputs
+echo "User Inputs:"
+echo "input_fastq: $input_fastq"
+echo "project_dir: $project_dir"
+echo "threads: $threads"
+echo "JobNr: $JobNr"
+echo "model: $model"
+echo "read_cut_off_low: $read_cut_off_low"
+echo "read_cut_off_high: $read_cut_off_high"
+echo "q_score_cutoff: $q_score_cutoff"
+echo "database: $database"
+echo "method: $method"
+echo "end of User Inputs"
 
-#Filter based upon information gained from "Amp-Seq_Statistics" workflow
-input="$input_fastq" ##Input path to folder containing merged .fastq files
-output="$project_dir/2_filtering" ## Output path
+#load mamba environment
+mamba activate /home/bio.aau.dk/mk20aj/.conda/envs/OTUtable/
 
-# Loop to create output directories for each input file in the output directory
-# Use find to locate files with the pattern "_merged.fastq"
-files=$(find "$input"/* -type f -name "*.f*q")
-for file in $files; do
-    subdirectory_name=$(basename "$file")
-    output_dir="${output}/${subdirectory_name}"
-    echo "created directory for $subdirectory_name in $output"
-    mkdir -p "$output_dir"
-done
 
 # Filter reads for q-score and length and trim adapters (22 nt's)
 input="$input_fastq"
 output="$project_dir/2_filtering"
 
-files=($(find "$input"/* -type f -name "*.f*q"))
+files=($(find "$input"/* -type f -name "*.fastq"))
 run_filtering () {
     local file="$1"
     local output="$2" 
@@ -134,8 +151,8 @@ run_filtering () {
     local threads="$4"
     local min_length="$5"
     local max_length="$6"
-    local base_name=$(basename "$file" _merged.fastq)
-    local output_file="$output/${base_name}/${base_name}.fastq"
+    local base_name=$(basename "$file" .fastq)
+    local output_file="$output/${base_name}.fastq"
 
     echo "filtering from $min_length to $max_length and q $q_score in $base_name"
     # Fake cat as chopper can't work directly on previously concatenated file... whack
@@ -165,7 +182,7 @@ for file in "${files[@]}"; do
     # Extract the base file name without extension
      base_name=$(basename "$file" .fastq)
      # Define the output file name
-     output_file="$output/${base_name}_newheaders.fa"
+     output_file="$output/${base_name}.fa"
     # Process the file and save the output in the output directory
     echo "changing '@' headers for $base_name to '>'"
     sed -n '1~4s/^@/>/p;2~4p' "$file" > "${output_file}"
@@ -173,129 +190,113 @@ done
 
 echo "Finished changing headers"
 
-# Z-Cluster OTU
+# Cluster OTU
 input="$project_dir/3_fastq-fa"
-output="$project_dir/4_zotus"
+output="$project_dir/4_otus"
 
-echo "Generating Z-clustered OTU's"
-find "$input" -type f -iname '*.fa' | parallel -j $JobNr --eta vsearch --cluster_unoise {} --minsize 1 --threads $((threads / JobNr)) --centroids "${output}/{/.}_zotus.fa"
-echo "Finished generating Z-clustered OTU's"
+files=$(find "$input" -type f -iname '*.fa')
+for file in $files
+do
+ vsearch \
+  --cluster_unoise $file \
+  --minsize 1 \
+  --threads 180 \
+  --centroids "${output}/$(basename "${file%.*}")_otus.fa"
+done
 
 
-echo "Concatenating z-clustered OTU's" 
-cat $project_dir/4_zotus/*.fa > $project_dir/5_zotus_cat/zotus_concatenated.fa
-echo "Finished Concatenatig z-clustered OTU's"
-# Z-Cluster OTU section done
+echo "Concatenating clustered OTU's" 
+cat $project_dir/4_otus/*.fa > $project_dir/5_otus_cat/otus_concatenated.fa
+echo "Finished Concatenatig clustered OTU's"
+# Cluster OTU section done
 
-# Medaka Polish section
-echo "Starting polishing outputs saved are in $project_dir/6_medaka"
+# racon Polish section
+echo "Starting polishing outputs saved are in $project_dir/6_racon"
 
 # Alignment part
-input="$project_dir/4_zotus"
-combined="$project_dir/5_zotus_cat/zotus_concatenated.fa"
-output="$project_dir/6_medaka"
+input="$project_dir/4_otus"
+combined="$project_dir/5_otus_cat/otus_concatenated.fa"
+output="$project_dir/6_racon"
 
-files=( "${input}"/*.fa )
-for file in  "${files[@]}"; do
-    file_prefix=$(basename "$file" | cut -d '_' -f 1)
-    sub_dir=${output}/${file_prefix}
-    mkdir -p $sub_dir
-    output_file=${sub_dir}/${file_prefix}_calls_to_draft
-    mini_align -i ${combined} -r ${file} -m \
-        -p ${output_file} \
-        -t $threads
-done
-
-echo "run_mini_align finished"
-
-# Medaka consensus algorithm (2nd step)
-# Run medaka consensus algorithm 
-input="$project_dir/6_medaka"
-output="$project_dir/6_medaka"
-
-files=( $(ls ${input}/*/*.bam) )
-run_medaka_consensus() {
+files=( $(ls ${input}/*.fa) ) 
+run_mini_align() {
     local file="$1"
-    local output="$2"
-    local model="$3"
+    local combined="$2"
+    local output="$3"
     local threads="$4"
-    local filepath=$(dirname "$file")
-    local sample=$(basename "$filepath")
-    local output="${filepath}/${sample}_consensus.hdf"
 
-    medaka consensus "$file" \
-    "$output" \
-    --model $model \
-    --threads $threads
+    file_prefix=$(basename "$file" | cut -d '_' -f 1)
+    output_file="${output}/${file_prefix}_aligned"
+    echo "Running minimap on $file"
+    minimap2 -ax map-ont -K 1G -t $threads "$file" "$combined" > "$output_file.sam"
 }
-export -f run_medaka_consensus
+export -f run_mini_align
 
-parallel -j "$JobNr" run_medaka_consensus ::: "${files[@]}" ::: "$output" ::: "$model" ::: $((threads / JobNr))
+parallel -j $JobNr --tmpdir "$project_dir/tmp" run_mini_align ::: "${files[@]}" ::: "$combined" ::: "$output" ::: $((threads / JobNr))
 
-# Medaka stich - creating consensus sequence of polished reads (3rd step)
-input="$project_dir/6_medaka"
-output="$project_dir/6_medaka"
-zotus_dir="$project_dir/4_zotus"
-draft_base="barcode"
+echo "mapping finished"
 
-files=( "${input}"/*/*.hdf )
-for file in "${files[@]}"; do
-    filepath=$(dirname "${file}")
-    barcode=$(basename "${filepath}")
-    draft="${zotus_dir}/${barcode}_newheaders_zotus.fa"
+# Racon polishing
+echo "Starting Racon polishing"
 
-    medaka stitch "${file}" \
-        "${draft}" \
-        "${filepath}/polished.assembly.fasta"
-done
-# Medaka stich finished
-# Renaming files to contain barcode#/BC# for later relabeling of reads
-base_directory="$project_dir/6_medaka"
-for dir in "$base_directory"/*; do 
-    if [ -d "$dir" ]; then
-    # Check if the directory contains a file named "polished.assembly.fasta"
-    if [ -e "$dir/polished.assembly.fasta" ]; then
-            #Construct new dir name 
-            new_dir_name=$(basename "$dir")
-            # Construct the new filename
-            new_filename="${new_dir_name}_polished.assembly.fasta"
-            # Construct the full path of the new file
-            new_file_path="$dir/$new_filename"
+combined="$project_dir/5_otus_cat/otus_concatenated.fa"
+input="$project_dir/6_racon"
+target="$project_dir/4_otus"
+output="$project_dir/6_racon"
+files=( $(ls ${input}/*.sam) )
+run_racon_polish() {
+    local file="$1"
+    local combined="$2"
+    local target="$3"
+    local threads="$4"
+    
+    polish_target=$target/$(basename "$file" _aligned.sam)_otus.fa
+    barcode=$(basename "$file" | cut -d '_' -f 1)
+    output_file=$target/"$barcode"_polished_assembly.fasta
 
-            #rename the file
-            mv "$dir/polished.assembly.fasta" "$new_file_path"
+    racon \
+    $combined \
+    $file \
+    $polish_target \
+    -t $threads \
+    > $output_file
+}
+export -f run_racon_polish
 
-            echo echo "Renamed: $dir/polished.assembly.fasta -> $new_file_path"
-        fi 
-    fi
-done
+parallel -j $JobNr --tmpdir "$project_dir/tmp" run_racon_polish ::: "${files[@]}" ::: "$combined" ::: "$target" ::: $((threads / JobNr))
+
 
 # Relabel reads using vsearch
-input="$project_dir/6_medaka"
-output="$project_dir/7_medaka_relabel"
+input="$project_dir/4_otus"
+output="$project_dir/7_racon_relabel"
 files=$(find "$input"/* -type f -iname '*.fasta')
 for file in $files; do
-    sample=$(basename "$file")
+    #Extract first 4 characters of filename
+    barcode=$(basename "$file" _polished_assembly.fasta)
  vsearch \
   --sortbysize $file \
-  --relabel "$sample." \
+  --relabel "$barcode." \
   --threads $threads \
   --output "${output}/$(basename "${file%.*}")_relabel.fa"
 done
 
-cat $project_dir/7_medaka_relabel/*.fa > $project_dir/7_medaka_relabel/combined_polished/polished_comb_reads.fa
+cat $project_dir/7_racon_relabel/*.fa > $project_dir/7_racon_relabel/combined_polished/polished_comb_reads.fa
 
 # 97% clustering using V-search
-input="$project_dir/7_medaka_relabel/combined_polished/polished_comb_reads.fa"
+input="$project_dir/7_racon_relabel/combined_polished/polished_comb_reads.fa"
 output="$project_dir/8_OTUtable/97"
 
-vsearch --cluster_fast $input -id 0.97 --threads $threads --relabel OTU_ --sizeout --otutabout $output/otutabe_0.97.tsv --centroids $output/otu_97.fa
+vsearch --cluster_fast $input -id 0.97 --threads $threads --relabel OTU_ --sizeout --otutabout $output/otutabel.0.97.tsv --centroids $output/otu_97.fa
+# Change the header of column 1 in otutable.97.tsv to "OTU"
+sed -i '1s/#OTU ID/OTU/' $output/otutabel.0.97.tsv
 
 # 99% clustering using V-search
-input="$project_dir/7_medaka_relabel/combined_polished/polished_comb_reads.fa"
+input="$project_dir/7_racon_relabel/combined_polished/polished_comb_reads.fa"
 output="$project_dir/8_OTUtable/99"
 
-vsearch --cluster_fast $input -id 0.99 --threads $threads --relabel OTU_ --sizeout --otutabout $output/otutabe_0.99.tsv --centroids $output/otu_99.fa
+vsearch --cluster_fast $input -id 0.99 --threads $threads --relabel OTU_ --sizeout --otutabout $output/otutabel.0.99.tsv --centroids $output/otu_99.fa
+# Change the header of column 1 in otutable.99.tsv to "OTU"
+sed -i '1s/#OTU ID/OTU/' $output/otutabel.0.99.tsv
 
 # Defining functions for Sintax or blastn database search:
 taxonomy_sintax() {
@@ -304,13 +305,18 @@ taxonomy_sintax() {
     local database="$3"
     local threads="$4"
     local sintax_cutoff="$5"
+    # Check if the input file exists and is readable
+    if [[ ! -r "$input" ]]; then
+        echo "Error: Input file '$input' does not exist or is not readable"
+        return 1
+    fi
 
     vsearch --sintax "$input" -db "$database" --tabbedout "$output/otu_cut.txt" \
-    --threads "$threads" --quiet --sintax_cutoff "$sintax_cutoff" --strand both
+    --threads "$threads" --sintax_cutoff "$sintax_cutoff" --strand both
 
     awk -F "\t" 'OFS="\t"{gsub(/;.*/," ",$1);print $1 $4}' "$output/otu_cut.txt" | awk -F ' ' '{print $1"\t"$2}' > "$output/tax2_cut.txt" 
 
-    input2="$(dirname "$input")/otutabe_${sintax_cutoff}.tsv"
+    input2="$(dirname "$input")/otutabel.$sintax_cutoff.tsv"
     awk 'BEGIN {FS=OFS="\t"} NR==FNR {hold[$1]=$2; next} {print $0, hold[$1]}' "$output/tax2_cut.txt" "$input2" > "$output/otutable_cut.tsv"
     
 }
@@ -335,20 +341,18 @@ taxonomy_blastn() {
     #Split words and add suffixes
     (echo -e "OTU ID\tgenus\tspecies\tnotes"; awk -F'\t' 'BEGIN {OFS="\t"} {split($2, words, " "); print $1, "g__"words[1], "s__"words[2], $2}' $output/otus_tax_mod.txt) > $output/otus_tax_mod1.txt
     #Rename headers
-    sed -i '1 s/OTU ID/OTU_ID/' "$output/otus_tax_mod1.txt"
-    sed -i '1 s/#OTU ID/OTU_ID/' "$output/otutabe_$clustering_percentage.tsv"
-    #Merge datasets to final OTUtable
+    sed -i '1 s/OTU ID/OTU/' "$output/otus_tax_mod1.txt"
+    sed -i '1 s/#OTU ID/OTU/' "$output/otutabel.$clustering_percentage.tsv"
     python3 <<EOF
-    import pandas as pd
-    import sys       
+import pandas as pd
+import sys
 
-    otus_tax = pd.read_csv("$output/otus_tax_mod1.txt", sep='\t')
-    otutabe = pd.read_csv("$output/otutabe_$clustering_percentage.tsv", sep='\t')
-    merged_data = pd.merge(otutabe, otus_tax, on='OTU_ID', how='right')
-    merged_data.to_csv("$output/OTUtable_$clustering_percentage.tsv", sep='\t', index=False)
+otus_tax = pd.read_csv("$output/otus_tax_mod1.txt", sep='\t')
+otutabel = pd.read_csv("$output/otutabel.$clustering_percentage.tsv", sep='\t')
+merged_data = pd.merge(otutabel, otus_tax, on='OTU', how='right')
+merged_data.to_csv("$output/OTUtable_$clustering_percentage.tsv", sep='\t', index=False)
 EOF
 }
-
 
 input_97="$project_dir/8_OTUtable/97/otu_97.fa"
 output_97="$project_dir/8_OTUtable/97"
@@ -491,7 +495,7 @@ done
 
 
 ## Prepare tax table for phyloseq
-## Raw vsearch output is 1 of the inputs for phyloseq ex. ($project_dir/8_OTUtable/97/otutabe_0.97.tsv) for each clustering percentage
+## Raw vsearch output is 1 of the inputs for phyloseq ex. ($project_dir/8_OTUtable/97/otutabel.97.tsv) for each clustering percentage
 input="$project_dir/8_OTUtable"
 output="$project_dir/8_OTUtable"
 # Use a loop to directly iterate over the results of find
@@ -529,7 +533,6 @@ done
 
 
 ##Remove suffixes from phyloseq OTU-table
-project_dir=/home/bio.aau.dk/mk20aj/Projects/zymo_test_data/test_outdir
 input=$project_dir/8_OTUtable
 output=$project_dir/8_OTUtable
 
@@ -551,5 +554,3 @@ find "$input" -type f -name "*phyloseq_tax.tsv" -print0 | while IFS= read -r -d 
     echo "Processing completed for $file. Output written to $output_file"
 done
 ###### TEST SHIT AT BOTTOM 
-
-
