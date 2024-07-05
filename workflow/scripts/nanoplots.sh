@@ -114,26 +114,10 @@ done
 # Finished unzipping, moving and concatenating passed .fastq files
 
 
-# Start of statistics workflow 
-input="$project_dir/fastqs"
-output="$project_dir/stats"
-#Create output directories for each input file in the output directory
-# Use find to locate files with the pattern "_concatenated.fastq"
-files=$(find "$input"/* -type f -name "*_merged.fastq")
-for file in $files; do
-    # Extract the subdirectory name from the file path
-    subdirectory_name=$(basename "$file" _merged.fastq)
-    # Construct the output directory path based on the subdirectory name
-    output_dir="${output}/${subdirectory_name}"
-    # Create the output directory if it doesn't exist
-    echo "created directory for $subdirectory_name in $output"
-    mkdir -p "$output_dir"
-done
-
 input_dir="$project_dir/fastqs"
 output_dir="$project_dir/stats"
 
-files=( $(ls ${input_dir}/*/*_merged.fastq) )
+files=( $(ls ${input_dir}/*/*.fastq) )
 # Create function for NanoPlot
 statistics() {
     local file="$1"
@@ -141,7 +125,7 @@ statistics() {
     local output_dir="$3"
     
     # Extract subdirectory name
-    local subdirectory_name=$(basename "$(dirname "$file")")
+    local subdirectory_name=$(basename "$file" .fastq)
     
     # Create output directory within the specified output_dir
     local output="$output_dir/$subdirectory_name"
