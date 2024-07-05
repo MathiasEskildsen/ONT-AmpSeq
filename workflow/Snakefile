@@ -24,11 +24,7 @@ include: "rules/11-prep_for_phyloseq.smk"
 include: "rules/12-phyloseq_abund_blast.smk"
 include: "rules/13-ampvis2_std_plots.smk"
 include: "rules/capture_config.smk" # <- this is a custom rule to capture the config file and changes to config file
-### Validate configuration options for "include_sintax_output" and "include_blast_output"
-def validate_boolean_config(config_value, config_name):
-    if not isinstance(config_value, bool):
-        raise ValueError(f"Invalid value for {config_name}: '{config_value}'. It must be True or False (case-sensitive).")
-# Validate the configuration values
+# Validate the configuration values, using 
 validate_boolean_config(config["include_blast_output"], "include_blast_output")
 validate_boolean_config(config["include_sintax_output"], "include_sintax_output")
 

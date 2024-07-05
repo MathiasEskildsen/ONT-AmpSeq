@@ -1,7 +1,10 @@
 ## Wildcards helper function - new version, this is the one located in the exp branch.
 import glob
 import os
-
+### Validate configuration options for "include_sintax_output" and "include_blast_output"
+def validate_boolean_config(config_value, config_name):
+    if not isinstance(config_value, bool):
+        raise ValueError(f"Invalid value for {config_name}: '{config_value}'. It must be True or False (case-sensitive).")
 # Wildcards helper function
 def listFastq(wildcards):
     sample_path = os.path.join(config['input_dir'])

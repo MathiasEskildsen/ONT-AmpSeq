@@ -158,7 +158,6 @@ statistics() {
 export -f statistics
 
 parallel -j "$JobNr" statistics ::: "${files[@]}" ::: $((threads / JobNr)) ::: "$output_dir" 
-module purge
 
 
 echo "Check your amplicon size and quality before setting parameters for chopper filtering, used in the snakemake workflow. Filtering settings can be changed in the config file. \"config/config.yaml\""
