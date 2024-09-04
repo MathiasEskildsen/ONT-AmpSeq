@@ -18,7 +18,7 @@ This workflow is actively maintained and supported, with new features continuous
 - [Bash Script](#ont-ampseq-in-bash-script-format)
 - [Running Test Data](#running-test-data)
 - [Example Usage](#example-usage)
-
+- [Citing ONT-AmpSeq](#Citing-ONT--AmpSeq)
 ## Requirements
 ### Hardware requirements
 As a general recommendation for running ONT-AmpSeq while producing every possible output, at least 32 threads and 40 GB of memory are advised. These high requirements stem from multithreading capabilities of the various software and tools used in the pipeline, as well as the need/possibility to handle very large datasets and databases. While the pipeline has been successfully run with 1 thread and as little as 4 GB of memory using smaller datasets `~/ONT-AmpSeq/.test/test_data` and the MiDAS v5.3 [SINTAX database](https://www.midasfieldguide.org/guide/downloads), using large datasets may cause minimap2 to run out of memory. Additionally, loading the general BLAST-formatted [GenBank database](https://www.ncbi.nlm.nih.gov/genbank/) requires ~40 GB of memory. For more details, see [BLAST database formatting](#databases).
@@ -445,3 +445,7 @@ The pipeline outputs OTU-tables with 97% and 99% identity ready for [Ampvis2](ht
 <figure id="figref-nanoplot">
   <img src="example_figures/Heatmap_99_sintax.png">
 </figure>
+
+### Citing ONT-AmpSeq
+If you use ONT-AmpSeq in your work, please cite:
+* Schacksen, P. et al. (2024). [Complete pipeline for Oxford Nanopore Technology amplicon sequencing (ONT-AmpSeq): from pre-processing to creating an operational taxonomic unit table.](https://doi.org/10.1002/2211-5463.13868), *FEBS open bio* doi:10.1002/2211-5463.13868
