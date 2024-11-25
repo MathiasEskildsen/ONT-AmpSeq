@@ -62,86 +62,97 @@ echo "Threads: $threads"
 #¤ Move unzip and concatenate passed .fastq reads
 ## Move unzip
 ### Input files. Directory path leading to passed fastq.gz files
-input=$input_fastq
+input="$input_fastq"
 output="$project_dir/fastqs"
-files=($(find "$input" -type f \( -name "*.gz" -o -name "*.fastq" -o -name "*.fasta" \)))
-for file in "${files[@]}"; do
-    parent_dir=$(dirname "$file")
-    # Check if the file is in a subdirectory
-    if [[ "$parent_dir" != "$input" ]]; then
-        # If the file is in a subdirectory, create the subdirectory in the output directory
-        subdirectory_name=$(basename "$parent_dir")
-        output_dir="${output}/${subdirectory_name}"
-        mkdir -p "$output_dir"
-        if gzip -t $file 2>/dev/null; then
-            echo "Decompressing $file"
-            gunzip -c "$file" > "$output_dir/$(basename "$file" ".gz")"
-        else
-            echo "Moving $file"
-            cp "$file" "$output_dir/$(basename "$file")"
+mkdir -p "$output"
+
+# Function to process a barcode directory or individual file
+process_files() {
+    local path="$1"
+    local output_dir="$2"
+
+    if [ -d "$path" ]; then
+        # Process barcode directory
+        local barcode_name=$(basename "$path")
+
+        # Skip the "unclassified" directory
+        if [[ "$barcode_name" == "unclassified" ]]; then
+            return
         fi
+
+        local output_file="${output_dir}/${barcode_name}.fastq"
+        local files=($(find "$path" -type f \( -name "*.gz" -o -name "*.fastq" -o -name "*.fasta" \)))
+
+        for file in "${files[@]}"; do
+            if gzip -t "$file" 2>/dev/null; then
+                gunzip -c "$file" >> "$output_file"
+            else
+                cat "$file" >> "$output_file"
+            fi
+        done
     else
-        filename=$(basename -- "$file")
-        filename="${filename%.*}"
-        filename="${filename%.*}"
-        # Create the output directory based on the filename name
-        output_dir="${output}/${filename}"
-        mkdir -p "$output_dir"
-        if gzip -t $file 2>/dev/null; then
-            echo "Decompressing $file"
-            gunzip -c "$file" > "$output_dir/$(basename "$file" ".gz")"
+        # Process individual file
+        local filename=$(basename "$path")
+        if gzip -t "$path" 2>/dev/null; then
+            gunzip -c "$path" > "${output_dir}/${filename%.gz}"
         else
-            echo "Moving $filename"
-            cp "$file" "$output_dir/$(basename "$file")"
+            cp "$path" "$output_dir/$filename"
         fi
     fi
-done
+}
+
+export -f process_files
+
+if compgen -G "$input/*/" > /dev/null; then
+    # Get all directories and files in the input
+    dirs_or_files=($(find "$input" -mindepth 1 -maxdepth 1))
+else
+    # Get only files if no subdirectories exist
+    dirs_or_files=($(find "$input" -type f \( -name "*.gz" -o -name "*.fastq" -o -name "*.fasta" \)))
+fi
+
+# Run the processing in parallel
+parallel -j "$JobNr" process_files ::: "${dirs_or_files[@]}" ::: "$output"
 
 echo "Finished moving and unzipping"
 
-## Concatenate .fastq files
-base_dir="$project_dir/fastqs"
-# Iterate over each subdirectory
-for sub_dir in "$base_dir"/*; do
-    if [ -d "$sub_dir" ]; then
-        sub_dir_name=$(basename "$sub_dir")
-        echo "Processing files in: $sub_dir_name"
-        # Concatenate all files in the subdirectory
-        cat "${sub_dir}"/* > "${sub_dir}/${sub_dir_name}_merged.fastq"
-        echo "Merged all files in $sub_dir_name"
-    fi
-done
+combined_file="${output}/barcodes_combined.fastq"
+cat "${output}"/*.fastq > "$combined_file"
+echo "Concatenation complete."
+
 # Finished unzipping, moving and concatenating passed .fastq files
 
+project_dir="${project_dir%/}"
 
 input_dir="$project_dir/fastqs"
 output_dir="$project_dir/stats"
 
-files=( $(ls ${input_dir}/*/*.fastq) )
+# Correctly list .fastq files in the input directory
+files=( $(ls "${input_dir}"/*.fastq) )
+
 # Create function for NanoPlot
 statistics() {
     local file="$1"
     local threads="$2"
-    local output_dir="$3"
+    local output_base_dir="$3"
     
-    # Extract subdirectory name
-    local subdirectory_name=$(basename "$file" .fastq)
-    
-    # Create output directory within the specified output_dir
-    local output="$output_dir/$subdirectory_name"
-    
-    echo "Creating plots and stats for $subdirectory_name in $output"
-    # Debug statement to print the actual file being processed
-    echo "Processing file: $file"
+    # Extract file name without extension
+    local filename_no_ext=$(basename "$file" .fastq)
+
+    # Define output directory using output_base_dir and filename
+    local output="$output_base_dir/$filename_no_ext"
 
     NanoPlot --fastq "$file" --plots dot -t "$threads" -o "$output"
     
-    echo "Finished plots and stats for $subdirectory_name"
+    echo "Finished plots and stats for $filename_no_ext"
 }
 
 export -f statistics
 
-parallel -j "$JobNr" statistics ::: "${files[@]}" ::: $((threads / JobNr)) ::: "$output_dir" 
+parallel -j "$JobNr" statistics ::: "${files[@]}" ::: $((threads)) ::: "$output_dir"
 
+
+# remove the combined file as it should not be run in the ONT-AmpSeq pipeline
+rm -f "$project_dir/fastqs/barcodes_combined.fastq"
 
 echo "Check your amplicon size and quality before setting parameters for chopper filtering, used in the snakemake workflow. Filtering settings can be changed in the config file. \"config/config.yaml\""
