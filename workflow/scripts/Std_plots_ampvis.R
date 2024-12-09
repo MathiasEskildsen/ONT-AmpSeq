@@ -39,7 +39,7 @@ ggsave(snakemake@output[["Heatmap"]], heat, width = 186, units = "mm")
 # Create rarefraction curve
 rare <- amp_rarecurve(
     ampvis_obj,
-    stepsize = 150,
+    stepsize = min(max(colSums(ampvis_obj$abund)), 150),
     color_by = "SampleID"    
 ) + xlim(0,25000) + labs(title="Rarefraction curve") + ylab("Number of observed OTUs") + 
 theme(
