@@ -3,7 +3,7 @@ rule capture_config:
     output:
         config = os.path.join(config["output_dir"], "config.txt")
     log:
-        os.path.join(config["log_dir"], "capture_config.log")
+        os.path.join(config["log_dir"], "capture_config", "capture_config.log")
     threads:
         1
     resources:

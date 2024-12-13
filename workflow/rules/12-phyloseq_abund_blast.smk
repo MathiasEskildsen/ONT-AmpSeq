@@ -6,7 +6,7 @@ rule individual_outputs_blast:
         abund = os.path.join(config['output_dir'], "final", "{id}", "phyloseq_abundance_{id}_blast.tsv"),
         tax = os.path.join(config['output_dir'], "final", "{id}", "phyloseq_tax_{id}_blast.tsv")
     log: 
-        os.path.join(config['log_dir'], "phyloseq_tax", 'phyloseq_{id}.log')
+        os.path.join(config['log_dir'], "12-phyloseq_abund_blast", "individual_outputs_blast", 'phyloseq_{id}.log')
     threads:
         1
     resources:
@@ -16,9 +16,13 @@ rule individual_outputs_blast:
         "../envs/generic.yml"
     shell:
         """
+        {{
+        echo "removing "#" from the OTU ID"
         cp {input.tax} {output.tax}
         cp {input.abund} {output.abund}
         sed -i '1 s/#OTU ID/OTU/' {output.abund}
+        echo "Finished the process"
+        }} > {log} 2>&1
         """
 rule merge_abund_tax_blast:
     input:
@@ -32,7 +36,7 @@ rule merge_abund_tax_blast:
         mem_mb = 1024,
         runtime = 60
     log:
-        os.path.join(config['log_dir'], "taxonomy_blast", 'merge_abund_tax_blast_{id}.log')
+        os.path.join(config['log_dir'], "12-phyloseq_abund_blast", "merge_abund_tax_blast", 'merge_abund_tax_blast_{id}.log')
     run:
         merge_abund_tax_blast(input["tax"], input["abund"], output[0])
 rule fix_tax_blast:
@@ -41,7 +45,7 @@ rule fix_tax_blast:
     output:
         os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_blast.tsv')
     log:
-        os.path.join(config['log_dir'], "taxonomy_blast", 'fix_tax_blast_{id}.log')
+        os.path.join(config['log_dir'], "12-phyloseq_abund_blast", "fix_tax_blast", 'fix_tax_blast_{id}.log')
     threads:
         1
     resources:

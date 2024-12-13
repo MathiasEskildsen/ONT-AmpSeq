@@ -18,7 +18,7 @@ rule ampvis2_std_plots_sintax:
     params:
         metadata = config['metadata']
     log:
-        os.path.join(config["log_dir"], "Ampvis2", "{id}", "ampvis2_plots_sintax.log")
+        os.path.join(config["log_dir"], "13-ampvis2_std_plots", "ampvis2_std_plots_sintax","{id}", "ampvis2_plots_sintax.log")
     script:
         "../scripts/Std_plots_ampvis.R"
 rule ampvis2_std_plots_blast:
@@ -40,6 +40,6 @@ rule ampvis2_std_plots_blast:
     params:
         metadata = config['metadata']
     log:
-        os.path.join(config["log_dir"], "Ampvis2", "{id}","ampvis2_plots_blast.log")
+        os.path.join(config["log_dir"], "13-ampvis2_std_plots", "ampvis2_std_plots_blast","{id}","ampvis2_plots_blast.log")
     script:
         "../scripts/Std_plots_ampvis.R"

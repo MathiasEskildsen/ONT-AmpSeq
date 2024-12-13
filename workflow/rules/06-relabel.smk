@@ -11,14 +11,16 @@ rule relabel:
         mem_mb = 2048,
         runtime = 60
     log:
-        os.path.join(config['log_dir'], "relabel", "{sample}.log")
+        os.path.join(config['log_dir'], "06-relabel", "relabel", "{sample}.log")
     shell:
         """
+        {{
         vsearch \
             --sortbysize {input} \
             --sample {wildcards.sample} \
             --threads {threads} \
             --output {output}
+        }} > {log} 2>&1
         """
 
 rule relabel_merge:
@@ -34,8 +36,12 @@ rule relabel_merge:
     conda:
         "../envs/vsearch.yml"
     log:
-        os.path.join(config['log_dir'], "relabel", "merged_polished_relabeled.log")
+        os.path.join(config['log_dir'], "06-relabel", "relabel_merge", "merged_polished_relabeled.log")
     shell:
         """
+        {{
+        echo "Starting concatenation of relabeled OTUs"
         cat {input} > {output}
+        echo "Finished concatenation of relabeled OTUs"
+        }} > {log} 2>&1
         """

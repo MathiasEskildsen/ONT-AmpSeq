@@ -12,11 +12,12 @@ rule cluster_ID:
     conda:
         "../envs/vsearch.yml"
     log:
-        os.path.join(config['log_dir'], "cluster_ID", "otu_{id}.log")
+        os.path.join(config['log_dir'], "07-clustering_identity", "otu_{id}.log")
     params:
         id = lambda wildcards: float(wildcards.id) / 100
     shell:
         """
+        {{
         vsearch \
             --cluster_fast {input} \
             --id {params.id} \
@@ -25,4 +26,5 @@ rule cluster_ID:
             --sizeout \
             --otutabout {output.otu_table} \
             --centroids {output.otu_centroids}
+        }} > {log} 2>&1
         """

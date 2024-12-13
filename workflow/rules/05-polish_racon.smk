@@ -13,13 +13,15 @@ rule polish_racon:
         mem_mb = 10240,
         runtime = 60
     log:
-        os.path.join(config["log_dir"], "polish_racon", "{sample}.log")
+        os.path.join(config["log_dir"], "05-polish_racon", "{sample}.log")
     shell:
         """
+        {{
         racon \
         {input.combined} \
         {input.alignment} \
         {input.polish_target} \
         -t {threads} \
         > {output}
+        }} > {log} 2>&1
         """

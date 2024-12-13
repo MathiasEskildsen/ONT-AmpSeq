@@ -5,7 +5,7 @@ rule prep_for_ampvis2_sintax:
     output:
         output_all = os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
     log:
-        os.path.join(config['log_dir'], "taxonomy_sintax", 'prep_for_ampvis2_{id}.log')
+        os.path.join(config['log_dir'], "10-prep_for_ampvis2", "prep_for_ampvis2_sintax",'prep_for_ampvis2_{id}.log')
     threads:
         1
     resources:
@@ -15,7 +15,6 @@ rule prep_for_ampvis2_sintax:
         "../envs/generic.yml"
     script:
         "../scripts/prep_for_ampvis2_sintax.py"
-
 rule ampvis2_modifications_sintax:
     input:
         os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
@@ -30,9 +29,10 @@ rule ampvis2_modifications_sintax:
     conda:
         "../envs/generic.yml"
     log:
-        os.path.join(config['log_dir'], "taxonomy_sintax", 'ampvis2_modifications_{id}.log')
+        os.path.join(config['log_dir'], "10-prep_for_ampvis2", "ampvis2_modifications_sintax",'ampvis2_modifications_{id}.log')
     shell:
         """
+        {{
         modifications=(
             's/kingdom\\s*__\\s*\\([^[:space:]]*\\)/k__\\1/g'
             's/phylum\\s*__\\s*\\([^[:space:]]*\\)/p__\\1/g'
@@ -51,4 +51,5 @@ rule ampvis2_modifications_sintax:
         done
         sed -i '1 s/#OTU ID/OTU/' {output.tmp}
         awk -F'\t' 'BEGIN {{OFS="\t"}} {{for (i=1; i<=NF; i++) gsub(/^[ \t]+|[ \t]+$/, "", $i)}} 1' {output.tmp} > {output.final}
+        }} > {log} 2>&1
     """

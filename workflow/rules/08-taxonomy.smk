@@ -15,9 +15,10 @@ rule taxonomy_sintax:
         db_path = config['db_path_sintax'],
         id = lambda wildcards: float(wildcards.id) / 100 # <- sintax cutoff (bootstrap value)
     log:
-        os.path.join(config['log_dir'], "taxonomy_sintax", "{id}", "otu_taxonomy_{id}.log")
+        os.path.join(config['log_dir'], "08-taxonomy", "taxonomy_sintax", "otu_taxonomy_{id}.log")
     shell:
         """
+        {{
         vsearch \
             --sintax {input} \
             --db {params.db_path} \
@@ -25,6 +26,7 @@ rule taxonomy_sintax:
             --threads {threads} \
             --sintax_cutoff {params.id} \
             --strand both
+        }} > {log} 2>&1
         """
 rule taxonomy_blast:
     input: 
@@ -43,9 +45,10 @@ rule taxonomy_blast:
         db_path = config['db_path_blast'],
         e_value = config['evalue']
     log:
-        os.path.join(config['log_dir'], "taxonomy_blast", "{id}", "otu_taxonomy_{id}.log")
+        os.path.join(config['log_dir'], "08-taxonomy", "taxonomy_blast", "otu_taxonomy_{id}.log")
     shell:
         """
+        {{
         blastn \
             -evalue {params.e_value} \
             -outfmt "6 qseqid stitle evalue bitscore length pident" \
@@ -57,5 +60,6 @@ rule taxonomy_blast:
             -out {output.tax_raw}
         
         awk '!seen[$0]++' {output.tax_raw} > {output.tax_uniq}
+        }} > {log} 2>&1
         """
         
