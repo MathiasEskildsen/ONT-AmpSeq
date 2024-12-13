@@ -13,5 +13,6 @@ jobs:
       - uses: GoogleCloudPlatform/release-please-action@v2
         id: release
         with:
+          token: ${{ secrets.PAT_TOKEN }}
           release-type: go # just keep a changelog, no version anywhere outside of git tags
           package-name: ONT-AmpSeq
