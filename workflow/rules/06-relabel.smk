@@ -16,7 +16,6 @@ rule relabel:
         """
         vsearch \
             --sortbysize {input} \
-            --relabel {wildcards.sample}. \
             --sample {wildcards.sample} \
             --threads {threads} \
             --output {output}
