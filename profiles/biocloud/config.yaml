@@ -13,7 +13,7 @@ cluster:
 #if rules don't have resources set, use these default values.
 #Note that "mem" will be converted to "mem_mb" under the hood, so mem_mb is prefered
 default-resources:
-  - partition="default-op"
+  - partition="shared"
   - qos="normal"
   - threads=1
   - mem_mb=1024
