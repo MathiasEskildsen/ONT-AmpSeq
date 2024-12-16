@@ -113,7 +113,10 @@ def prepare_inputs():
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "figs", "{id}", "Rarefaction_{id}_blast.png"), id=ids))
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "figs", "{id}", "Ordination_{id}_blast.png"), id=ids))
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "figs", "{id}", "Boxplot_{id}_blast.png"), id=ids))
-        inputs.extend(expand(os.path.join(config['output_dir'], "final", "R-environment", "{id}", "R-environment_{id}_blast.RData"), id=ids))        
-    inputs.append(expand(os.path.join(config['output_dir'], "final", "report", "total_reads.tsv")))
-    inputs.append(expand(os.path.join(config["output_dir"], "config.txt")))
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "R-environment", "{id}", "R-environment_{id}_blast.RData"), id=ids))
+    if not any((config["include_sintax_output"], config["include_blast_output"])):
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "OTU_table_{id}.tsv"), id=ids))
+        inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "OTUs_{id}.fna"), id=ids))
+    inputs.append(os.path.join(config['output_dir'], "final", "report", "total_reads.tsv"))
+    inputs.append(os.path.join(config["output_dir"], "config.txt"))
     return inputs
