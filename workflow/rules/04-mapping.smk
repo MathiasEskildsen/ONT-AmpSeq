@@ -10,7 +10,7 @@ rule concatenate_otus:
             ),
             sample=get_samples(),
         ),
-        # Use aggregate rule to concatenate all files using wildcard.sample
+    # Use aggregate rule to concatenate all files using wildcard.sample
     output:
         os.path.join(
             config["output_dir"], "vsearch", "samples", "concatenated_otus.fasta"
