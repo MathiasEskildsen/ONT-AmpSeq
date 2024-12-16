@@ -1,18 +1,24 @@
 configfile: "config/config.yaml"
+
+
 import os
+
+
 rule convert_to_fasta:
     input:
-        os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq")
+        os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq"),
     output:
-        os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
+        os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta"),
     threads: 1
     resources:
-        mem_mb = 512,
-        runtime = 60
+        mem_mb=512,
+        runtime=60,
     conda:
         "../envs/vsearch.yml"
     log:
-        os.path.join(config["log_dir"], "03-clustering", "convert_to_fasta","{sample}.log")
+        os.path.join(
+            config["log_dir"], "03-clustering", "convert_to_fasta", "{sample}.log"
+        ),
     shell:
         """
         {{
@@ -21,20 +27,25 @@ rule convert_to_fasta:
             echo "Finished conversion to FASTA for sample {wildcards.sample}"
         }} > {log} 2>&1  
     """
+
+
 rule vsearch_cluster:
     input:
-        os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta")
+        os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fasta"),
     output:
-        os.path.join(config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta")
-    threads:
-        config["max_threads"]
+        os.path.join(
+            config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta"
+        ),
+    threads: config["max_threads"]
     resources:
-        mem_mb = 8192,
-        runtime = 1440
+        mem_mb=8192,
+        runtime=1440,
     conda:
         "../envs/vsearch.yml"
     log:
-        os.path.join(config["log_dir"], "03-clustering", "vsearch_cluster", "{sample}.log")
+        os.path.join(
+            config["log_dir"], "03-clustering", "vsearch_cluster", "{sample}.log"
+        ),
     shell:
         """
         {{
@@ -47,5 +58,3 @@ rule vsearch_cluster:
             echo "Finished clustering for sample {wildcards.sample}"
         }} > {log} 2>&1
     """
-
-

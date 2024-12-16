@@ -1,19 +1,27 @@
 include: "common.smk"
 
+
 rule concatenate_fastq:
     input:
-        lambda wildcards: listFastq(wildcards)
+        lambda wildcards: listFastq(wildcards),
     output:
-        concat = temp(os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq")),
-        total_reads = temp(os.path.join(config['tmp_dir'], "read_count", "{sample}", "{sample}_total_reads_pre_filtering.tsv"))
+        concat=temp(os.path.join(config["tmp_dir"], "samples", "{sample}_concat.fastq")),
+        total_reads=temp(
+            os.path.join(
+                config["tmp_dir"],
+                "read_count",
+                "{sample}",
+                "{sample}_total_reads_pre_filtering.tsv",
+            )
+        ),
     resources:
-        mem_mb = 512,
-        runtime = 60
+        mem_mb=512,
+        runtime=60,
     conda:
         "../envs/generic.yml"
     threads: 1
     log:
-        os.path.join(config["log_dir"], "01-concatenate_fastq", "{sample}.log")
+        os.path.join(config["log_dir"], "01-concatenate_fastq", "{sample}.log"),
     shell:
         """
         {{
