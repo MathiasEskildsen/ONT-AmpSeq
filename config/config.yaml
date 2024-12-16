@@ -1,36 +1,60 @@
-# input folder is expected to contain a subfolder for each sampleID/barcode
-# then all fastq files in each subfolder is concatenated and the folder name is used a sample ID downstream
-# Input files can also be located directly in the input folder, but then the sample ID is the filename and not the folder name
-# This can give some funny names if the filenames are not properly formatted, however it should not affect the output
+# Directory containing input data
+# Each sample should be in its own subfolder, or directly in the input folder
+# If files are directly in the input folder, the filename will be used as the sample ID
 input_dir: ".test/test_data"
+
+# Path to the metadata file
 metadata: ".test/metadata/metadata_test.txt"
-## Path to desired output directory
+
+# Path to the desired output directory
 output_dir: "results"
+
+# Path to the temporary directory for intermediate files
 tmp_dir: "tmp"
+
+# Path to the directory for log files
 log_dir: "logs"
 
-# This file is for various variables used throughout the workflow.
-# Everything else regarding how things are run should go in the profile config
-# Provide paths to database of your choice or both if you want to run both 
+# Path to the SINTAX database file
 db_path_sintax: ".test/databases/zymo_reference.fa"
+
+# Path to the BLAST database directory
 db_path_blast: ".test/databases/blast_zymo"
-evalue: 1e-10 # E-value cutoff for blast
 
-# Parameters for filtering reads (filtering.smk)
-# Change based on amplicon length and desired quality
-length_lower_limit: 1200 # minimum length of reads to keep
-length_upper_limit: 1600 # maximum length of reads to keep
-quality_cut_off: 20 # minimum quality score to keep (phred-score)
+# E-value cutoff for BLAST searches
+evalue: 1e-10
 
-# Number of threads to use for individual roles.
-# Not ideal, but threads can be set in multiple places, so the best is to set 
-# this to a large number and instead adjust the max-threads (per rule) 
-# in the profile config.yaml to suit your particular computing setup.
+# Parameters for filtering reads
+# Minimum length of reads to keep
+length_lower_limit: 1200
+
+# Maximum length of reads to keep
+length_upper_limit: 1600
+
+# Minimum quality score to keep (phred-score)
+quality_cut_off: 20
+
+# Maximum number of threads to use for individual roles
+# Set this to a large number and adjust max-threads (per rule) in the profile config.yaml
 max_threads: 32
 
-# Include final blast and sintax output (default is True for both)
+# Include final BLAST output (True/False)
 include_blast_output: True
+
+# Include final SINTAX output (True/False)
 include_sintax_output: True
 
-# User-configurable IDs
-ids: ["97", "99"] # Clustering identity thresholds for OTU picking
+# Clustering identity thresholds for OTU picking
+# Use "." as a decimal separator
+ids: ["97", "99"]
+
+# Primer lengths to trim from reads
+# Default is 22nt for both forward and reverse primers
+primer_f: 22
+primer_r: 22
+
+# Minimap2 mapping options
+# For more information see https://lh3.github.io/minimap2/minimap2.html#10
+# Default values are provided
+f: 0.0002
+K: "500M"

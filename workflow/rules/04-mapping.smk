@@ -30,6 +30,9 @@ rule mapping:
     resources:
         mem_mb = 40960,
         runtime = 2880
+    params:
+        K = config['K'],
+        f = config['f']
     threads:
         config['max_threads']
     conda:
@@ -41,7 +44,8 @@ rule mapping:
         {{
         minimap2 \
         -ax map-ont \
-        -K500M \
+        -K{params.K} \
+        -f {params.f} \
         -t {threads} \
         --secondary=no \
         {input.samples} \

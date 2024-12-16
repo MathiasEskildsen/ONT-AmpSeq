@@ -14,3 +14,8 @@
 - `max_threads`: Maximum number of threads that can be used for any rule.
 - `include_blast_output`: Default = True. If true snakemake will output a final OTU-table with taxonomy infered from a blastn search against a nt blast database.
 - `include_sintax_output`: Default = True. If true snakemake will output a final OTU-table with taxonomy infered from a sintax formatted database.
+- `ids`: Clustering identity for OTUs. Default is 97% and 99%. Use "." decimal seperator i.e 99.9.
+- `primer_f`: Forward primer length to trim off. Default = 22
+- `primer_r`: Reverse primer length to trim off. Defeault = 22
+- `f`: Minimap2 mapping option. Default = 0.0002 More information at [here](https://lh3.github.io/minimap2/minimap2.html#10).
+- `K`: Minimap2 mapping option. Default = 500M More information at [here](https://lh3.github.io/minimap2/minimap2.html#10).

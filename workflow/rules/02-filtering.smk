@@ -12,7 +12,9 @@ rule filter_fastq:
     params:
         length_lower_limit = config['length_lower_limit'],
         length_upper_limit = config['length_upper_limit'],
-        quality_cut_off = config['quality_cut_off']
+        quality_cut_off = config['quality_cut_off'],
+        primer_f = config['primer_f'],
+        primer_r = config['primer_r']
     conda:
         "../envs/filtering.yml"
     log:
@@ -24,8 +26,8 @@ rule filter_fastq:
             chopper \
             --minlength {params.length_lower_limit} \
             --maxlength {params.length_upper_limit} \
-            --headcrop 22 \
-            --tailcrop 22 \
+            --headcrop {params.primer_f} \
+            --tailcrop {params.primer_r} \
             -q {params.quality_cut_off} \
             -t {threads} \
             < {input} \
