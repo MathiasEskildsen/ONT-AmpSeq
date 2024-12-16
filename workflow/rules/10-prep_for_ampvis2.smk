@@ -1,35 +1,66 @@
 configfile: "config/config.yaml"
+
+
 rule prep_for_ampvis2_sintax:
     input:
-        input_all = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv")
+        input_all=os.path.join(
+            config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv"
+        ),
     output:
-        output_all = os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
+        output_all=os.path.join(
+            config["output_dir"],
+            "OTU-tables",
+            "{id}",
+            "otu_table_all_fixed_{id}_sintax.tsv",
+        ),
     log:
-        os.path.join(config['log_dir'], "10-prep_for_ampvis2", "prep_for_ampvis2_sintax",'prep_for_ampvis2_{id}.log')
-    threads:
-        1
+        os.path.join(
+            config["log_dir"],
+            "10-prep_for_ampvis2",
+            "prep_for_ampvis2_sintax",
+            "prep_for_ampvis2_{id}.log",
+        ),
+    threads: 1
     resources:
-        mem_mb = 2048,
-        runtime = 60
+        mem_mb=2048,
+        runtime=60,
     conda:
         "../envs/generic.yml"
     script:
         "../scripts/prep_for_ampvis2_sintax.py"
+
+
 rule ampvis2_modifications_sintax:
     input:
-        os.path.join(config['output_dir'], "OTU-tables", "{id}", "otu_table_all_fixed_{id}_sintax.tsv")
+        os.path.join(
+            config["output_dir"],
+            "OTU-tables",
+            "{id}",
+            "otu_table_all_fixed_{id}_sintax.tsv",
+        ),
     output:
-        final = os.path.join(config['output_dir'], "final", "{id}", 'OTUtable_tax_{id}_sintax.tsv'), # <- this is the output file ready for ampvis2
-        tmp = temp(os.path.join(config['tmp_dir'], "{id}", 'OTUtable_tax_{id}_sintax_temp.tsv'))
-    threads:
-        1
+        final=os.path.join(
+            config["output_dir"], "final", "{id}", "OTUtable_tax_{id}_sintax.tsv"
+        ),
+        # <- this is the output file ready for ampvis2
+        tmp=temp(
+            os.path.join(
+                config["tmp_dir"], "{id}", "OTUtable_tax_{id}_sintax_temp.tsv"
+            )
+        ),
+    threads: 1
     resources:
-        mem_mb = 1024,
-        runtime = 60
+        mem_mb=1024,
+        runtime=60,
     conda:
         "../envs/generic.yml"
     log:
-        os.path.join(config['log_dir'], "10-prep_for_ampvis2", "ampvis2_modifications_sintax",'ampvis2_modifications_{id}.log')
+        os.path.join(
+            config["log_dir"],
+            "10-prep_for_ampvis2",
+            "ampvis2_modifications_sintax",
+            "ampvis2_modifications_{id}.log",
+        ),
     shell:
         """
         {{

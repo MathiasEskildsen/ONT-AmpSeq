@@ -7,7 +7,10 @@ from snakemake.utils import min_version
 
 min_version("7.18.2")
 
+
 configfile: "config/config.yaml"
+
+
 # Rules
 include: "rules/common.smk"
 include: "rules/01-concatenate_fastq.smk"
@@ -23,16 +26,19 @@ include: "rules/10-prep_for_ampvis2.smk"
 include: "rules/11-prep_for_phyloseq.smk"
 include: "rules/12-phyloseq_abund_blast.smk"
 include: "rules/13-ampvis2_std_plots.smk"
-include: "rules/capture_config.smk" # <- this is a custom rule to capture the config file and changes to config file
-# Validate the configuration values, using 
+include: "rules/capture_config.smk"  # <- this is a custom rule to capture the config file and changes to config file
+
+
+# Validate the configuration values, using
 validate_boolean_config(config["include_blast_output"], "include_blast_output")
 validate_boolean_config(config["include_sintax_output"], "include_sintax_output")
 
 # Assign the configuration values to variables
 include_blast_output = config["include_blast_output"]
 include_sintax_output = config["include_sintax_output"]
+
+
 ## Function to generate output files for "rule all" are defined in the common.smk file
 rule all:
     input:
-        prepare_inputs()
-
+        prepare_inputs(),
