@@ -31,3 +31,6 @@ max_threads: 32
 # Include final blast and sintax output (default is True for both)
 include_blast_output: True
 include_sintax_output: True
+
+# User-configurable IDs
+ids: ["97", "99"] # Clustering identity thresholds for OTU picking

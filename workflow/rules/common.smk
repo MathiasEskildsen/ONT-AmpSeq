@@ -94,7 +94,7 @@ if __name__ == "__main__":
 ## You can comment out the files you don't need in the expand function.
 def prepare_inputs():
     inputs = []
-    ids = ["97", "99"]
+    ids = config["ids"]
     if config["include_sintax_output"]:
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "OTUtable_tax_{id}_sintax.tsv"), id=ids))
         inputs.extend(expand(os.path.join(config['output_dir'], "final", "{id}", "phyloseq_tax_{id}_sintax.tsv"), id=ids))
