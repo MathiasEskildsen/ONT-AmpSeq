@@ -62,4 +62,26 @@ rule taxonomy_blast:
         awk '!seen[$0]++' {output.tax_raw} > {output.tax_uniq}
         }} > {log} 2>&1
         """
-        
+rule without_taxonomy:
+    input: 
+        table = os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv"),
+        fasta = os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa"),
+    output:
+        table = os.path.join(config['output_dir'], "final", "{id}", "OTU_table_{id}.tsv"),
+        fasta = os.path.join(config['output_dir'], "final", "{id}", "OTUs_{id}.fna"),
+    threads:
+        1
+    resources:
+        mem_mb = 512,
+        runtime = 60
+    conda:
+        "../envs/vsearch.yml"
+    log:
+        os.path.join(config['log_dir'], "08-taxonomy", "without_taxonomy", "otu_taxonomy_{id}.log")
+    shell:
+        """
+        {{
+        cp {input.table} {output.table}
+        cp {input.fasta} {output.fasta}
+        }} > {log} 2>&1
+        """
