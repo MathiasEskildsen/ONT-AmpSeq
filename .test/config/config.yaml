@@ -1,14 +1,60 @@
+# Directory containing input data
+# Each sample should be in its own subfolder, or directly in the input folder
+# If files are directly in the input folder, the filename will be used as the sample ID
 input_dir: "test_data"
+
+# Path to the metadata file
 metadata: "metadata/metadata_test.txt"
+
+# Path to the desired output directory
 output_dir: "output_test"
+
+# Path to the temporary directory for intermediate files
 tmp_dir: "tmp"
+
+# Path to the directory for log files
 log_dir: "logs"
+
+# Path to the SINTAX database file
 db_path_sintax: "databases/zymo_reference.fa"
+
+# Path to the BLAST database directory
 db_path_blast: "databases/blast_zymo"
+
+# E-value cutoff for BLAST searches
 evalue: 1e-10
+
+# Parameters for filtering reads
+# Minimum length of reads to keep
 length_lower_limit: 1200
+
+# Maximum length of reads to keep
 length_upper_limit: 1600
+
+# Minimum quality score to keep (phred-score)
 quality_cut_off: 20
+
+# Maximum number of threads to use for individual roles
+# Set this to a large number and adjust max-threads (per rule) in the profile config.yaml
 max_threads: 32
-include_blast_output: true
-include_sintax_output: true
+
+# Include final BLAST output (True/False)
+include_blast_output: True
+
+# Include final SINTAX output (True/False)
+include_sintax_output: True
+
+# Clustering identity thresholds for OTU picking
+# Use "." as a decimal separator
+ids: ["97", "99"]
+
+# Primer lengths to trim from reads
+# Default is 22nt for both forward and reverse primers
+primer_f: 22
+primer_r: 22
+
+# Minimap2 mapping options
+# For more information see https://lh3.github.io/minimap2/minimap2.html#10
+# Default values are provided
+f: 0.0002
+K: "500M"
