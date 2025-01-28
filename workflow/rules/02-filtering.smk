@@ -1,14 +1,22 @@
 rule filter_fastq:
     input:
-        os.path.join(config['tmp_dir'], "samples", "{sample}_concat.fastq")
+        os.path.join(config["tmp_dir"], "samples", "{sample}_concat.fastq"),
     output:
-        filtered = temp(os.path.join(config['tmp_dir'], "samples", "{sample}_filtered.fastq")),
-        total_reads = temp(os.path.join(config['tmp_dir'], "read_count", "{sample}", "{sample}_total_reads_post_filtering.tsv"))
-    threads:
-        2
+        filtered=temp(
+            os.path.join(config["tmp_dir"], "samples", "{sample}_filtered.fastq")
+        ),
+        total_reads=temp(
+            os.path.join(
+                config["tmp_dir"],
+                "read_count",
+                "{sample}",
+                "{sample}_total_reads_post_filtering.tsv",
+            )
+        ),
+    threads: 2
     resources:
-        mem_mb = 1024,
-        runtime = 60
+        mem_mb=1024,
+        runtime=60,
     params:
         length_lower_limit = config['length_lower_limit'],
         length_upper_limit = config['length_upper_limit'],
@@ -18,7 +26,7 @@ rule filter_fastq:
     conda:
         "../envs/filtering.yml"
     log:
-        os.path.join(config['log_dir'], "02-filtering", "filter_fastq", "{sample}.log")
+        os.path.join(config["log_dir"], "02-filtering", "filter_fastq", "{sample}.log"),
     shell:
         """
         {{
@@ -40,21 +48,43 @@ rule filter_fastq:
             echo "Finished filtering for sample {wildcards.sample}"
         }} > {log} 2>&1
         """
+
+
 rule merge_read_count:
     input:
-        pre = expand(os.path.join(config['tmp_dir'], "read_count", "{sample}", "{sample}_total_reads_pre_filtering.tsv"), sample=get_samples()),
-        post = expand(os.path.join(config['tmp_dir'], "read_count", "{sample}","{sample}_total_reads_post_filtering.tsv"), sample=get_samples())
+        pre=expand(
+            os.path.join(
+                config["tmp_dir"],
+                "read_count",
+                "{sample}",
+                "{sample}_total_reads_pre_filtering.tsv",
+            ),
+            sample=get_samples(),
+        ),
+        post=expand(
+            os.path.join(
+                config["tmp_dir"],
+                "read_count",
+                "{sample}",
+                "{sample}_total_reads_post_filtering.tsv",
+            ),
+            sample=get_samples(),
+        ),
     output:
-        os.path.join(config['output_dir'], "final", "report", "total_reads.tsv")
-    threads:
-        2
+        os.path.join(config["output_dir"], "final", "report", "total_reads.tsv"),
+    threads: 2
     resources:
-        mem_mb = 1024,
-        runtime = 60
+        mem_mb=1024,
+        runtime=60,
     conda:
         "../envs/filtering.yml"
-    log: 
-        os.path.join(config['log_dir'], "02-filtering", "merge_read_count","merge_read_count.log")
+    log:
+        os.path.join(
+            config["log_dir"],
+            "02-filtering",
+            "merge_read_count",
+            "merge_read_count.log",
+        ),
     shell:
         """
         {{

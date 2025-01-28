@@ -1,21 +1,29 @@
 configfile: "config/config.yaml"
+
+
 rule taxonomy_sintax:
-    input: 
-        os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa")
+    input:
+        os.path.join(config["output_dir"], "cluster", "{id}", "otu_{id}.fa"),
     output:
-        os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_sintax.txt")
-    threads:
-        config['max_threads']
+        os.path.join(
+            config["output_dir"], "taxonomy", "{id}", "otu_taxonomy_{id}_sintax.txt"
+        ),
+    threads: config["max_threads"]
     resources:
-        mem_mb = 2048,
-        runtime = 120
+        mem_mb=2048,
+        runtime=120,
     conda:
         "../envs/vsearch.yml"
     params:
-        db_path = config['db_path_sintax'],
-        id = lambda wildcards: float(wildcards.id) / 100 # <- sintax cutoff (bootstrap value)
+        db_path=config["db_path_sintax"],
+        id=lambda wildcards: float(wildcards.id) / 100,  # <- sintax cutoff (bootstrap value)
     log:
-        os.path.join(config['log_dir'], "08-taxonomy", "taxonomy_sintax", "otu_taxonomy_{id}.log")
+        os.path.join(
+            config["log_dir"],
+            "08-taxonomy",
+            "taxonomy_sintax",
+            "otu_taxonomy_{id}.log",
+        ),
     shell:
         """
         {{
@@ -28,24 +36,34 @@ rule taxonomy_sintax:
             --strand both
         }} > {log} 2>&1
         """
+
+
 rule taxonomy_blast:
-    input: 
-        os.path.join(config['output_dir'], "cluster", "{id}", "otu_{id}.fa")
+    input:
+        os.path.join(config["output_dir"], "cluster", "{id}", "otu_{id}.fa"),
     output:
-        tax_raw = os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast.txt"),
-        tax_uniq = os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast_uniq.txt")
-    threads:
-        config['max_threads']
+        tax_raw=os.path.join(
+            config["output_dir"], "taxonomy", "{id}", "otu_taxonomy_{id}_blast.txt"
+        ),
+        tax_uniq=os.path.join(
+            config["output_dir"],
+            "taxonomy",
+            "{id}",
+            "otu_taxonomy_{id}_blast_uniq.txt",
+        ),
+    threads: config["max_threads"]
     resources:
-        mem_mb = 40960,
-        runtime = 10080
+        mem_mb=40960,
+        runtime=10080,
     conda:
         "../envs/blast.yml"
     params:
-        db_path = config['db_path_blast'],
-        e_value = config['evalue']
+        db_path=config["db_path_blast"],
+        e_value=config["evalue"],
     log:
-        os.path.join(config['log_dir'], "08-taxonomy", "taxonomy_blast", "otu_taxonomy_{id}.log")
+        os.path.join(
+            config["log_dir"], "08-taxonomy", "taxonomy_blast", "otu_taxonomy_{id}.log"
+        ),
     shell:
         """
         {{

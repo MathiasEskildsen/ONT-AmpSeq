@@ -1,20 +1,36 @@
 configfile: "config/config.yaml"
+
+
 rule fix_otu_table_sintax:
-    input: 
-        otu_txt =  os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_sintax.txt"),
-        otu_tsv = os.path.join(config['output_dir'], "cluster", "{id}", "otu_cluster_{id}.tsv")
+    input:
+        otu_txt=os.path.join(
+            config["output_dir"], "taxonomy", "{id}", "otu_taxonomy_{id}_sintax.txt"
+        ),
+        otu_tsv=os.path.join(
+            config["output_dir"], "cluster", "{id}", "otu_cluster_{id}.tsv"
+        ),
     output:
-        output_all = os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv"),
-        output_temp = temp(os.path.join(config["tmp_dir"], "{id}", "otu_taxonomy_{id}_cut_temp_sintax.txt"))
-    threads:
-        1
+        output_all=os.path.join(
+            config["output_dir"], "OTU-tables", "{id}", "otu_table_all_{id}_sintax.tsv"
+        ),
+        output_temp=temp(
+            os.path.join(
+                config["tmp_dir"], "{id}", "otu_taxonomy_{id}_cut_temp_sintax.txt"
+            )
+        ),
+    threads: 1
     resources:
-        mem_mb = 1024,
-        runtime = 60
+        mem_mb=1024,
+        runtime=60,
     conda:
         "../envs/generic.yml"
     log:
-        os.path.join(config["log_dir"], "09-fix_otu_table", "fix_otu_table_sintax", "otu_table_all_{id}.log")
+        os.path.join(
+            config["log_dir"],
+            "09-fix_otu_table",
+            "fix_otu_table_sintax",
+            "otu_table_all_{id}.log",
+        ),
     shell:
         """
         {{
@@ -24,21 +40,44 @@ rule fix_otu_table_sintax:
         echo "Finished the OTU table fixing process"
         }} > {log} 2>&1
         """
+
+
 rule prep_input_blast:
     input:
-        os.path.join(config['output_dir'], "taxonomy", "{id}", "otu_taxonomy_{id}_blast_uniq.txt")
+        os.path.join(
+            config["output_dir"],
+            "taxonomy",
+            "{id}",
+            "otu_taxonomy_{id}_blast_uniq.txt",
+        ),
     output:
-        trimmed =   os.path.join(config["output_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt"),
-        tmp =   temp(os.path.join(config["tmp_dir"], "OTU-tables", "{id}", "otu_taxonomy_{id}_blast_trimmed.txt"))
-    threads:
-        1
+        trimmed=os.path.join(
+            config["output_dir"],
+            "OTU-tables",
+            "{id}",
+            "otu_taxonomy_{id}_blast_trimmed.txt",
+        ),
+        tmp=temp(
+            os.path.join(
+                config["tmp_dir"],
+                "OTU-tables",
+                "{id}",
+                "otu_taxonomy_{id}_blast_trimmed.txt",
+            )
+        ),
+    threads: 1
     resources:
-        mem_mb = 1024,
-        runtime = 60
+        mem_mb=1024,
+        runtime=60,
     conda:
         "../envs/generic.yml"
     log:
-        os.path.join(config["log_dir"], "09-fix_otu_table", "prep_input_blast", "otu_taxonomy_{id}_blast.log")
+        os.path.join(
+            config["log_dir"],
+            "09-fix_otu_table",
+            "prep_input_blast",
+            "otu_taxonomy_{id}_blast.log",
+        ),
     shell:
         """
         {{
