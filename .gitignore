@@ -9,3 +9,7 @@ output_test/**
 workflow_dryrun.txt
 true_test
 stats
+test_minreads
+test_minreads/**
+test_test
+test_test/**
