@@ -82,7 +82,7 @@ The workflow needs to be configured according to the individual dataset content 
 * `include_sintax_output`: Default = True (case-sensitive). If True, ONT-AmpSeq will annotate the final OTU-table using the SINTAX algorithm and a [SINTAX formatted database](https://drive5.com/usearch/manual/sintax_algo.html).
 * `ids`: Clustering identity for OTUs. Default is 97% and 99%. Use "." decimal seperator i.e 99.9.
 * `primer_f`: Forward primer length to trim off. Default = 22.
-* `primer_r`: Reverse primer length to trim off. Defeault = 22.
+* `primer_r`: Reverse primer length to trim off. Default = 22.
 * `f`: Minimap2 mapping option. Default = 0.0002 More information at [here](https://lh3.github.io/minimap2/minimap2.html#10).
 * `K`: Minimap2 mapping option. Default = 500M More information at [here](https://lh3.github.io/minimap2/minimap2.html#10).
 
