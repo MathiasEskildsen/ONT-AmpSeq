@@ -1,15 +1,18 @@
 ## Wildcards helper function - new version, this is the one located in the exp branch.
 import glob
 import os
+import pandas as pd
 
+#Check for samples to process in metadata
+metadata_file = config["metadata"]
+metadata = pd.read_csv(metadata_file, sep="\t")
+metadata.columns = metadata.columns.str.strip()
 
-### Validate configuration options for "include_sintax_output" and "include_blast_output"
-def validate_boolean_config(config_value, config_name):
-    if not isinstance(config_value, bool):
-        raise ValueError(
-            f"Invalid value for {config_name}: '{config_value}'. It must be True or False (case-sensitive)."
-        )
+if "SampleID" not in metadata.columns:
+    raise ValueError(f"'SampleID' column not found. Available columns: {metadata.columns.tolist()}")
 
+valid_samples = set(metadata["SampleID"].dropna().tolist())
+print("Valid Samples:", valid_samples)
 
 # Wildcards helper function
 def listFastq(wildcards):
@@ -21,7 +24,7 @@ def listFastq(wildcards):
         subdirs = [
             d
             for d in os.listdir(sample_path)
-            if os.path.isdir(os.path.join(sample_path, d))
+            if os.path.isdir(os.path.join(sample_path, d)) and d in valid_samples
         ]
 
         if subdirs:
@@ -38,34 +41,51 @@ def listFastq(wildcards):
             ]
             for file in files:
                 file_base = os.path.splitext(file)[0]
-                if wildcards.sample in file_base:
+                if wildcards.sample in file_base and file_base in valid_samples:
                     fastqs.append(os.path.join(sample_path, file))
     return fastqs
+### Validate configuration options for "include_sintax_output" and "include_blast_output"
+def validate_boolean_config(config_value, config_name):
+    if not isinstance(config_value, bool):
+        raise ValueError(
+            f"Invalid value for {config_name}: '{config_value}'. It must be True or False (case-sensitive)."
+        )
+
+
+
 
 
 # Define the function to list samples
 def get_samples():
     sample_path = config["input_dir"]
+    
+    # Load metadata and extract valid sample IDs
+    metadata_file = config["metadata"]
+    metadata = pd.read_csv(metadata_file, sep="\t")
+    metadata.columns = metadata.columns.str.strip()  # Remove hidden spaces
+    valid_samples = set(metadata["SampleID"])  # Only process these samples
+
     samples = []
+
     if os.path.isdir(sample_path):
         subdirs = [
-            d
-            for d in os.listdir(sample_path)
-            if os.path.isdir(os.path.join(sample_path, d))
+            d for d in os.listdir(sample_path)
+            if os.path.isdir(os.path.join(sample_path, d)) and d in valid_samples
         ]
+
         if subdirs:
             samples = subdirs
         else:
             files = [
-                f
-                for f in os.listdir(sample_path)
+                f for f in os.listdir(sample_path)
                 if os.path.isfile(os.path.join(sample_path, f))
             ]
             for file in files:
-                # Handle files with multiple extensions
+                # Extract sample name from filename
                 file_base = re.sub(r"\.fastq(\.gz)?$", "", file)
-                if file_base not in samples:
+                if file_base in valid_samples and file_base not in samples:
                     samples.append(file_base)
+
     return samples
 
 
