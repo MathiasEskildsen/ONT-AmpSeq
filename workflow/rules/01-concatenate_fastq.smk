@@ -1,6 +1,3 @@
-include: "common.smk"
-
-
 rule concatenate_fastq:
     input:
         lambda wildcards: listFastq(wildcards),

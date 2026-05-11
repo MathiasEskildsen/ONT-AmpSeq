@@ -1,18 +1,18 @@
 rule polish_racon:
     input:
         combined=os.path.join(
-            config["output_dir"], "vsearch", "samples", "concatenated_otus.fasta"
+            config["output_dir"], "vsearch", "denoised.fasta"
         ),
         alignment=os.path.join(
             config["output_dir"], "mapping", "samples", "{sample}_aligned.sam"
         ),
         polish_target=os.path.join(
-            config["output_dir"], "vsearch", "samples", "{sample}_cluster.fasta"
+            config["tmp_dir"], "samples", "{sample}_filtered.fasta"
         ),
     output:
-        os.path.join(
+        touch(os.path.join(
             config["output_dir"], "polish", "samples", "{sample}_polished.fasta"
-        ),
+        )),
     conda:
         "../envs/polish.yml"
     threads: config["max_threads"]
@@ -24,6 +24,7 @@ rule polish_racon:
     shell:
         """
         {{
+        # make a check here to check if file is empty or not
         racon \
         {input.combined} \
         {input.alignment} \

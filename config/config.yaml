@@ -58,3 +58,11 @@ primer_r: 22
 # Default values are provided
 f: 0.0002
 K: "500M"
+
+# unoise denoising, minimum read count for each ASV
+# (should always be 2 or more)
+unoise_minsize: 8
+
+# OTU clustering, minimum read count for each OTU cluster centroid
+# (should always be 2 or more)
+clustering_minsize: 8

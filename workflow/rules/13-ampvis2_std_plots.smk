@@ -1,6 +1,3 @@
-include: "common.smk"
-
-
 rule ampvis2_std_plots_sintax:
     input:
         OTU_sintax=os.path.join(
@@ -10,7 +7,7 @@ rule ampvis2_std_plots_sintax:
         Heatmap=os.path.join(
             config["output_dir"], "final", "figs", "{id}", "Heatmap_{id}_sintax.png"
         ),
-        Rarefraction=os.path.join(
+        Rarefaction=os.path.join(
             config["output_dir"],
             "final",
             "figs",
@@ -59,7 +56,7 @@ rule ampvis2_std_plots_blast:
         Heatmap=os.path.join(
             config["output_dir"], "final", "figs", "{id}", "Heatmap_{id}_blast.png"
         ),
-        Rarefraction=os.path.join(
+        Rarefaction=os.path.join(
             config["output_dir"], "final", "figs", "{id}", "Rarefaction_{id}_blast.png"
         ),
         Ordination=os.path.join(

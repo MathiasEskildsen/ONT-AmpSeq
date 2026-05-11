@@ -1,6 +1,3 @@
-include: "common.smk"
-
-
 rule phyloseq_abund_sintax:
     input:
         os.path.join(config["output_dir"], "cluster", "{id}", "otu_cluster_{id}.tsv"),

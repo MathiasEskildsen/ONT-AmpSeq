@@ -167,7 +167,7 @@ NOTE: BLAST results in a high degree of “edge-cases” due to the formatting o
 * `ONT-AmpSeq-main/results/final/{id}/phyloseq_abundance_{id}_{tax}.tsv`: This matrix contains number of reads per sample per OTU. This OTU table is preformatted to be directly compatible with the otu_table for creating and analysing a [phyloseq object](https://joey711.github.io/phyloseq/).
 * `ONT-AmpSeq-main/results/final/report/total_reads.tsv`: This file provides an overview of the number of reads in each sample pre- and post-filtering.
 * `ONT-AmpSeq-main/results/final/figs/{id}/Heatmap_{id}_{tax}.png`: Heatmap, showing the relative abundance of top 25 most abundant genera.
-* `ONT-AmpSeq-main/results/final/figs/{id}/Rarefraction_{id}_{tax}.png`: Rarefraction curve, showing number of reads versus number of observed OTUs.
+* `ONT-AmpSeq-main/results/final/figs/{id}/Rarefaction_{id}_{tax}.png`: Rarefaction curve, showing number of reads versus number of observed OTUs.
 * `ONT-AmpSeq-main/results/final/figs/{id}/Ordination_{id}_{tax}.png`: Ordination plot, using simple PCA.
 * `ONT-AmpSeq-main/results/config.txt`: Text file, capturing the configurations used in the analysis.
 ## Stats script (nanoplot.sh)

@@ -36,16 +36,16 @@ heat <- amp_heatmap(ampvis_obj,
 
 ggsave(snakemake@output[["Heatmap"]], heat, width = 186, units = "mm")
 
-# Create rarefraction curve
+# Create rarefaction curve
 rare <- amp_rarecurve(
     ampvis_obj,
     stepsize = min(max(colSums(ampvis_obj$abund)), 150),
     color_by = "SampleID"    
-) + xlim(0,25000) + labs(title="Rarefraction curve") + ylab("Number of observed OTUs") + 
+) + xlim(0,25000) + labs(title="Rarefaction curve") + ylab("Number of observed OTUs") + 
 theme(
     axis.text.x = element_text(angle = 90, hjust = 1), panel.border = element_rect(fill=NA, color="Black", size = 0.5, linetype = "solid"),  panel.grid.major = element_blank(), panel.grid.minor  = element_blank(), axis.line = element_line(colour = "black")
     )
-ggsave(snakemake@output[["Rarefraction"]], rare, width = 186, units = "mm")
+ggsave(snakemake@output[["Rarefaction"]], rare, width = 186, units = "mm")
 
 # Create ordination plot
 ord <- amp_ordinate(
